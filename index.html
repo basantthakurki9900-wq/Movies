@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineStream Pro - मूवी एवं मीडिया कैटलॉग</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js Library for Analytics Line Graph -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Firebase SDK (v8) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0b0c10;
+            color: #ffffff;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Dynamic Theme Palette Definitions */
+        .theme-netflix {
+            --primary: #e50914;
+            --primary-hover: #b80710;
+            --bg-dark: #0b0c10;
+            --card-bg: #1f2833;
+            --accent: #e50914;
+        }
+        .theme-cyberpunk {
+            --primary: #00f0ff;
+            --primary-hover: #00b8c4;
+            --bg-dark: #050515;
+            --card-bg: #0d0f2b;
+            --accent: #ff007f;
+        }
+        .theme-gold {
+            --primary: #d4af37;
+            --primary-hover: #aa8c2c;
+            --bg-dark: #121212;
+            --card-bg: #1e1e1e;
+            --accent: #ffd700;
+        }
+        .theme-emerald {
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --bg-dark: #064e3b;
+            --card-bg: #022c22;
+            --accent: #34d399;
+        }
+        .theme-space {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #818cf8;
+        }
+
+        .theme-btn {
+            background-color: var(--primary) !important;
+        }
+        .theme-btn:hover {
+            background-color: var(--primary-hover) !important;
+        }
+        .theme-text {
+            color: var(--primary) !important;
+        }
+        .theme-border {
+            border-color: var(--primary) !important;
+        }
+
+        /* Movie Card Hover Animation */
+        .movie-card {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .movie-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 14px 28px rgba(0,0,0,0.5), 0 10px 10px rgba(0,0,0,0.4);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0c10;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2833;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body class="theme-netflix min-h-screen flex flex-col">
+
+    <!-- Navbar Section -->
+    <header class="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-white/10 px-4 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-film text-3xl theme-text"></i>
+            <span class="text-2xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-amber-500">
+                CineStream<span class="text-white text-xs px-2 py-0.5 rounded bg-red-600/30 ml-1 border border-red-500/50">PRO</span>
+            </span>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <!-- Search Input in Header (Desktop) -->
+            <div class="relative hidden md:block w-72">
+                <input type="text" id="searchInputDesktop" placeholder="मूवी, शो या श्रेणी खोजें..." 
+                    class="w-full bg-white/5 text-sm rounded-full pl-10 pr-4 py-2 border border-white/10 focus:outline-none focus:border-red-500 text-white placeholder-gray-400">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-gray-400 text-sm"></i>
+            </div>
+
+            <!-- Admin Profile Access Button -->
+            <button onclick="openAdminModal()" title="एडमिन लॉग इन" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/20 transition-all">
+                <i class="fa-solid fa-user-shield text-lg theme-text"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Top Banner Ad Box Container -->
+    <div class="w-full bg-black/40 py-3 border-b border-white/10 flex flex-col items-center justify-center min-h-[85px]">
+        <div class="text-[10px] text-gray-400 uppercase tracking-widest mb-1.5 font-semibold">
+            <i class="fa-solid fa-rectangle-ad text-yellow-500 mr-1"></i> SPONSORED ADVERTISEMENT
+        </div>
+        
+        <!-- Fixed 468x60 Responsive Box -->
+        <div class="w-[468px] max-w-full h-[60px] bg-black/60 border border-white/10 rounded-lg overflow-hidden flex items-center justify-center shadow-inner">
+            <script>
+              atOptions = {
+                'key' : '948025ec81d2e6ebbd59049304441e15',
+                'format' : 'iframe',
+                'height' : 60,
+                'width' : 468,
+                'params' : {}
+              };
+            </script>
+            <script src="https://ourselvesincompetentlearned.com/948025ec81d2e6ebbd59049304441e15/invoke.js"></script>
+        </div>
+    </div>
+
+    <!-- Professional Telegram Banner Box (Below Ad Banner) -->
+    <div class="container mx-auto px-4 pt-4">
+        <a id="telegramUserBannerLink" href="https://t.me/" target="_blank" class="block w-full bg-gradient-to-r from-sky-600/90 via-blue-600/90 to-sky-700/90 hover:from-sky-500 hover:to-blue-600 text-white border border-sky-400/40 rounded-2xl p-3 sm:p-4 shadow-lg shadow-sky-900/20 transition-all transform hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-2xl sm:text-3xl shadow-inner flex-shrink-0">
+                        <i class="fa-brands fa-telegram"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs sm:text-sm font-extrabold tracking-wide uppercase text-sky-200">टेलीग्राम सपोर्ट हेल्पडेस्क</h4>
+                        <p class="text-xs sm:text-base font-bold text-white mt-0.5">मूवी नहीं मिल रही हो तो इस टेलीग्राम पर ओके करें 🚀</p>
+                    </div>
+                </div>
+                <div class="hidden sm:flex items-center space-x-1 bg-white text-sky-600 px-4 py-2 rounded-xl font-extrabold text-xs shadow-md">
+                    <span>JOIN NOW</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow container mx-auto px-4 py-6">
+
+        <!-- Mobile Search Bar -->
+        <div class="block md:hidden mb-6">
+            <div class="relative w-full">
+                <input type="text" id="searchInputMobile" placeholder="मूवी, शो या श्रेणी खोजें..." 
+                    class="w-full bg-white/5 text-sm rounded-xl pl-10 pr-4 py-3 border border-white/10 focus:outline-none focus:border-red-500 text-white placeholder-gray-400">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-gray-400 text-sm"></i>
+            </div>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="flex items-center space-x-2 overflow-x-auto pb-4 scrollbar-none mb-6">
+            <button onclick="filterCategory('All')" class="category-btn active px-4 py-1.5 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/20 whitespace-nowrap border border-white/10">सभी (All)</button>
+            <button onclick="filterCategory('Bollywood')" class="category-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/20 whitespace-nowrap border border-white/10 text-gray-300">बॉलीवुड</button>
+            <button onclick="filterCategory('Hollywood')" class="category-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/20 whitespace-nowrap border border-white/10 text-gray-300">हॉलीवुड</button>
+            <button onclick="filterCategory('South Hindi')" class="category-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/20 whitespace-nowrap border border-white/10 text-gray-300">साउथ हिंदी</button>
+            <button onclick="filterCategory('Web Series')" class="category-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/20 whitespace-nowrap border border-white/10 text-gray-300">वेब सीरीज़</button>
+        </div>
+
+        <!-- Movie Cards Grid -->
+        <div id="movieGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            <!-- Dynamic Movie Cards Rendered Here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center">
+            <i class="fa-solid fa-film-slash text-5xl text-gray-600 mb-4"></i>
+            <h3 class="text-xl font-bold text-gray-400">कोई मूवी नहीं मिली!</h3>
+            <p class="text-sm text-gray-500 mt-1">कृपया कोई दूसरा नाम खोजें या श्रेणी बदलें।</p>
+        </div>
+    </main>
+
+    <!-- User Movie Details & Download Modal -->
+    <div id="movieDetailModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-gray-900 border border-white/10 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col">
+            <button onclick="closeMovieDetailModal()" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/60 text-white hover:bg-red-600 flex items-center justify-center transition-all border border-white/20">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="overflow-y-auto p-5 space-y-4">
+                
+                <!-- Fixed Poster Section (Maintains 2:3 Aspect Ratio) -->
+                <div class="w-full flex justify-center">
+                    <div class="w-48 sm:w-56 aspect-[2/3] relative overflow-hidden rounded-xl border border-white/10 shadow-2xl bg-black/60">
+                        <img id="modalMoviePoster" src="" alt="Poster" class="w-full h-full object-cover">
+                    </div>
+                </div>
+
+                <!-- Info Section -->
+                <div class="text-center space-y-2">
+                    <span id="modalMovieCategory" class="inline-block px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-red-600/20 text-red-400 border border-red-500/30">Category</span>
+                    <h2 id="modalMovieTitle" class="text-xl font-bold text-white">Movie Title</h2>
+                    <p id="modalMovieDesc" class="text-xs text-gray-300 leading-relaxed px-2">Description goes here...</p>
+                </div>
+
+                <!-- Sponsored Ad Display Frame -->
+                <div class="bg-black/50 border border-yellow-500/30 rounded-xl p-3 text-center space-y-2">
+                    <div class="text-[10px] text-yellow-500 font-semibold uppercase tracking-wider">
+                        <i class="fa-solid fa-rectangle-ad mr-1"></i> स्पॉन्सर्ड विज्ञापन
+                    </div>
+                    <div class="py-1 flex justify-center items-center overflow-hidden">
+                         <a href="https://ourselvesincompetentlearned.com/n3ekr8j6?key=065cf53aa3bf38722db0e76ab9572979" target="_blank" class="w-full py-2 bg-gradient-to-r from-yellow-600 to-amber-500 text-black text-xs font-bold rounded-lg block hover:opacity-90">
+                            🔥 क्लिक करें और स्पेशल ऑफर देखें
+                         </a>
+                    </div>
+                </div>
+
+                <!-- Download Buttons Section -->
+                <div class="space-y-2 pt-1">
+                    <h4 class="text-[11px] font-bold uppercase tracking-wider text-gray-400 text-center">एचडी डाउनलोड और वॉच लिंक्स:</h4>
+                    
+                    <a id="modalDlBtn1" href="#" onclick="handleAdAndRedirect(event, this)" target="_blank" class="w-full py-3 px-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between shadow-lg shadow-red-900/30 transition-all">
+                        <span><i class="fa-solid fa-bolt mr-2"></i> सर्वर 1 - 4K Ultra HD</span>
+                        <i class="fa-solid fa-download text-xs"></i>
+                    </a>
+
+                    <a id="modalDlBtn2" href="#" onclick="handleAdAndRedirect(event, this)" target="_blank" class="w-full py-3 px-4 bg-white/10 hover:bg-white/20 text-white border border-white/10 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-between transition-all">
+                        <span><i class="fa-solid fa-cloud-arrow-down mr-2 text-blue-400"></i> सर्वर 2 - 1080p फास्ट क्लाउड</span>
+                        <i class="fa-solid fa-arrow-right text-xs text-gray-400"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Authentication Modal (Passcode Protected) -->
+    <div id="adminAuthModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-gray-900 border border-white/10 rounded-2xl max-w-md w-full p-6 relative shadow-2xl">
+            <button onclick="closeAdminAuthModal()" class="absolute top-3 right-3 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <div id="authFormState">
+                <div class="text-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-red-600/20 border border-red-500/40 text-red-500 flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-solid fa-lock text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">एडमिन सत्यापन</h3>
+                    <p class="text-xs text-gray-400 mt-1">एडमिन पैनल एक्सेस करने के लिए पासकोड दर्ज करें</p>
+                </div>
+
+                <form onsubmit="verifyAdminPasscode(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">सुरक्षा पासकोड</label>
+                        <input type="password" id="adminPassInput" required class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-red-500 text-center tracking-widest text-lg">
+                    </div>
+
+                    <p id="authErrorMsg" class="text-xs text-red-500 text-center hidden">गलत पासकोड! पुनः प्रयास करें।</p>
+
+                    <button type="submit" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-red-900/30">
+                        अनलॉक करें
+                    </button>
+                </form>
+
+                <div class="text-center mt-4">
+                    <button onclick="switchToForgotPassState()" class="text-xs text-gray-400 hover:text-red-400 underline">🔑 पासवर्ड भूल गए?</button>
+                </div>
+            </div>
+
+            <!-- Forgot Password State -->
+            <div id="forgotFormState" class="hidden">
+                <div class="text-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-amber-600/20 border border-amber-500/40 text-amber-500 flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-solid fa-key text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">पासवर्ड रीसेट करें</h3>
+                    <p class="text-xs text-gray-400 mt-1">सत्यापन के लिए जन्मतिथि दर्ज करें</p>
+                </div>
+
+                <form onsubmit="verifyAdminDOB(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">जन्मतिथि (DD/MM/YYYY)</label>
+                        <input type="password" id="adminDobInput" required class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 text-center tracking-widest text-base">
+                    </div>
+
+                    <p id="dobErrorMsg" class="text-xs text-red-500 text-center hidden">गलत जन्मतिथि!</p>
+
+                    <button type="submit" class="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-amber-900/30">
+                        सत्यापित करें
+                    </button>
+                </form>
+
+                <div class="text-center mt-4">
+                    <button onclick="switchToAuthPassState()" class="text-xs text-gray-400 hover:text-white underline">वापस जाएँ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Professional Admin Panel with Line Graph & Telegram Settings -->
+    <div id="adminPanelModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-gray-900 border border-white/10 rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+            <div class="p-4 bg-black/40 border-b border-white/10 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-user-gear theme-text text-xl"></i>
+                    <h3 class="text-lg font-bold text-white">प्रोफ़ेशनल एडमिन कंट्रोल पैनल</h3>
+                </div>
+                <button onclick="closeAdminPanelModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="overflow-y-auto p-6 space-y-6">
+                
+                <!-- Live Stats Summary Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <!-- Realtime Active Counter -->
+                    <div class="p-4 bg-gradient-to-br from-green-900/30 to-emerald-900/10 border border-green-500/30 rounded-xl flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] text-green-400 font-bold uppercase tracking-wider block">🟢 लाइव ऑनलाइन</span>
+                            <span id="activeUserCount" class="text-2xl font-extrabold text-white mt-1 block">1</span>
+                        </div>
+                        <i class="fa-solid fa-users text-2xl text-green-500/50"></i>
+                    </div>
+
+                    <!-- Today's Total Visitors -->
+                    <div class="p-4 bg-gradient-to-br from-blue-900/30 to-indigo-900/10 border border-blue-500/30 rounded-xl flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] text-blue-400 font-bold uppercase tracking-wider block">आज के यूज़र्स</span>
+                            <span id="todayVisitorCount" class="text-2xl font-extrabold text-white mt-1 block">0</span>
+                        </div>
+                        <i class="fa-solid fa-chart-line text-2xl text-blue-500/50"></i>
+                    </div>
+
+                    <!-- Total Historical Visitors -->
+                    <div class="p-4 bg-gradient-to-br from-purple-900/30 to-fuchsia-900/10 border border-purple-500/30 rounded-xl flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] text-purple-400 font-bold uppercase tracking-wider block">कुल विज़िटर्स</span>
+                            <span id="totalVisitorCount" class="text-2xl font-extrabold text-white mt-1 block">0</span>
+                        </div>
+                        <i class="fa-solid fa-eye text-2xl text-purple-500/50"></i>
+                    </div>
+                </div>
+
+                <!-- Telegram Link Admin Control Box -->
+                <div class="bg-gradient-to-r from-sky-900/30 to-blue-900/20 border border-sky-500/30 rounded-xl p-4 space-y-3">
+                    <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center">
+                        <i class="fa-brands fa-telegram text-sky-400 text-base mr-2"></i> टेलीग्राम लिंक मैनेजमेंट (Telegram Link Settings)
+                    </h4>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <input type="url" id="adminTelegramLinkInput" placeholder="https://t.me/your_channel_link" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-400">
+                        <button onclick="updateTelegramLink()" class="px-5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-lg text-xs whitespace-nowrap transition-all shadow-md">
+                            लिंक सेव करें
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Professional Analytics Line Chart Section -->
+                <div class="bg-white/5 border border-white/10 rounded-xl p-5 space-y-3">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                        <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center">
+                            <i class="fa-solid fa-chart-area theme-text mr-2"></i> विज़िटर एनालिटिक्स - पिछले 7 दिन (Line Chart)
+                        </h4>
+                        <span class="text-[10px] text-gray-400 bg-black/40 px-2 py-1 rounded">Daily Traffic Trend</span>
+                    </div>
+
+                    <!-- Line Canvas element -->
+                    <div class="relative w-full h-60">
+                        <canvas id="visitorChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Theme Switcher & Controls -->
+                <div class="p-4 bg-white/5 border border-white/10 rounded-xl space-y-2">
+                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider block">ऐप थीम चुनें (App Theme)</label>
+                    <select id="themeSelector" onchange="changeAppTheme(this.value)" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                        <option value="theme-netflix">🔴 Netflix Red (Classic Dark)</option>
+                        <option value="theme-cyberpunk">⚡ Cyberpunk Neon</option>
+                        <option value="theme-gold">👑 Royal Gold</option>
+                        <option value="theme-emerald">🟢 Emerald Green</option>
+                        <option value="theme-space">🌌 Deep Space Blue</option>
+                    </select>
+                </div>
+
+                <!-- Add New Movie Form -->
+                <div class="bg-white/5 border border-white/10 rounded-xl p-5 space-y-4">
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider border-b border-white/10 pb-2">
+                        <i class="fa-solid fa-plus-circle text-red-500 mr-2"></i>नई मूवी / शो जोड़ें
+                    </h4>
+
+                    <form onsubmit="handleMovieSubmit(event)" class="space-y-4">
+                        <input type="hidden" id="editMovieId" value="">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">मूवी / शो का नाम *</label>
+                                <input type="text" id="formTitle" required placeholder="उदाहरण: Jawan (2023)" class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">श्रेणी (Category) *</label>
+                                <select id="formCategory" required class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                                    <option value="Bollywood">बॉलीवुड</option>
+                                    <option value="Hollywood">हॉलीवुड</option>
+                                    <option value="South Hindi">साउथ हिंदी</option>
+                                    <option value="Web Series">वेब सीरीज़</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Image Upload Options -->
+                        <div class="space-y-2">
+                            <label class="block text-xs text-gray-400">फोटो/पोस्टर अपलोड करें *</label>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div class="relative border border-dashed border-white/20 rounded-lg p-3 text-center bg-black/20 hover:bg-black/40 cursor-pointer">
+                                    <input type="file" id="formFileImage" accept="image/*" onchange="handleFileSelect(event)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+                                    <i class="fa-solid fa-cloud-arrow-up text-lg text-gray-400 mb-1"></i>
+                                    <span class="block text-xs text-gray-300">फ़ाइल से फोटो चुनें</span>
+                                </div>
+
+                                <div>
+                                    <input type="url" id="formUrlImage" placeholder="या फोटो लिंक (ImgBB / URL) चिपकाएँ" class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-3 text-xs text-white focus:outline-none focus:border-red-500 h-full">
+                                </div>
+                            </div>
+                            <input type="hidden" id="finalImageHolder" value="">
+                        </div>
+
+                        <!-- Download & Target Links -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">मूवी डाउनलोड लिंक 1 (Server 1) *</label>
+                                <input type="url" id="formLink1" required placeholder="https://..." class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">मूवी डाउनलोड लिंक 2 (Server 2)</label>
+                                <input type="url" id="formLink2" placeholder="https://..." class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">मूवी डिस्क्रिप्शन *</label>
+                            <textarea id="formDesc" rows="3" required placeholder="फिल्म के बारे में विवरण लिखें..." class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500"></textarea>
+                        </div>
+
+                        <button type="submit" id="submitMovieBtn" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-red-900/30">
+                            सबमिट करें / पब्लिश करें
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Existing Content List Management -->
+                <div class="bg-white/5 border border-white/10 rounded-xl p-5 space-y-4">
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider border-b border-white/10 pb-2">
+                        मौजूदा मूवीज मैनेज करें (<span id="totalMoviesCount">0</span>)
+                    </h4>
+
+                    <div id="adminMovieList" class="space-y-3 max-h-60 overflow-y-auto pr-1">
+                        <!-- Admin Manage Cards Rendered Here -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic Script -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBuJA-I_i5ZJiSAtgOHad6tlhUS5xyohw8",
+            authDomain: "adni-5c161.firebaseapp.com",
+            databaseURL: "https://adni-5c161-default-rtdb.firebaseio.com",
+            projectId: "adni-5c161",
+            storageBucket: "adni-5c161.firebasestorage.app",
+            messagingSenderId: "995712815156",
+            appId: "1:995712815156:web:6968c0157d1fb87b143a61",
+            measurementId: "G-7W2B19B9PM"
+        };
+
+        let db;
+        let moviesData = [];
+        let currentCategory = 'All';
+        let searchQuery = '';
+        let myChartInstance = null;
+        let currentTelegramLink = 'https://t.me/';
+        const ADMIN_PASSCODE = '8815';
+        const RESET_DOB = '01/01/2000';
+        const AD_LINK = 'https://ourselvesincompetentlearned.com/n3ekr8j6?key=065cf53aa3bf38722db0e76ab9572979';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                db = firebase.database();
+                setupRealtimeListeners();
+                registerPresenceAndAnalytics();
+            } catch (err) {
+                console.warn("Firebase Init fallback to LocalStorage:", err);
+                loadFromLocalStorage();
+            }
+
+            setupSearchListeners();
+        });
+
+        function registerPresenceAndAnalytics() {
+            if (!db) return;
+
+            const presenceRef = db.ref('presence/' + Math.random().toString(36).substring(2, 9));
+            presenceRef.set(true);
+            presenceRef.onDisconnect().remove();
+
+            db.ref('presence').on('value', (snapshot) => {
+                const count = snapshot.numChildren() || 1;
+                const countEl = document.getElementById('activeUserCount');
+                if (countEl) countEl.innerText = count;
+            });
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            const sessionKey = 'visited_' + todayStr;
+
+            if (!sessionStorage.getItem(sessionKey)) {
+                sessionStorage.setItem(sessionKey, 'true');
+                db.ref('analytics/daily/' + todayStr).transaction(curr => (curr || 0) + 1);
+                db.ref('analytics/total_visits').transaction(curr => (curr || 0) + 1);
+            }
+
+            db.ref('analytics').on('value', (snapshot) => {
+                const data = snapshot.val() || {};
+                const daily = data.daily || {};
+                const total = data.total_visits || 0;
+
+                const todayVal = daily[todayStr] || 0;
+                document.getElementById('todayVisitorCount').innerText = todayVal;
+                document.getElementById('totalVisitorCount').innerText = total;
+
+                renderVisitorLineChart(daily);
+            });
+        }
+
+        function renderVisitorLineChart(dailyData) {
+            const ctx = document.getElementById('visitorChart').getContext('2d');
+            
+            const labels = [];
+            const dataPoints = [];
+
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toISOString().split('T')[0];
+                const displayLabel = d.toLocaleDateString('hi-IN', { month: 'short', day: 'numeric' });
+                
+                labels.push(displayLabel);
+                dataPoints.push(dailyData[dateStr] || 0);
+            }
+
+            if (myChartInstance) {
+                myChartInstance.destroy();
+            }
+
+            myChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'दैनिक विज़िटर्स (Daily Visitors)',
+                        data: dataPoints,
+                        borderColor: '#e50914',
+                        backgroundColor: 'rgba(229, 9, 20, 0.15)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#e50914',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#cccccc', font: { family: 'Poppins', size: 11 } }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#888888', font: { size: 10 } },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        y: {
+                            ticks: { color: '#888888', precision: 0, font: { size: 10 } },
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function setupRealtimeListeners() {
+            // Listen for Movies
+            db.ref('movies').on('value', (snapshot) => {
+                const val = snapshot.val();
+                moviesData = [];
+                if (val) {
+                    Object.keys(val).forEach(key => {
+                        moviesData.push({ id: key, ...val[key] });
+                    });
+                }
+                renderMovieCards();
+                renderAdminList();
+            });
+
+            // Listen for Theme
+            db.ref('settings/theme').on('value', (snapshot) => {
+                const theme = snapshot.val();
+                if (theme) {
+                    document.body.className = theme + ' min-h-screen flex flex-col';
+                    document.getElementById('themeSelector').value = theme;
+                }
+            });
+
+            // Listen for Telegram Link Settings
+            db.ref('settings/telegram_link').on('value', (snapshot) => {
+                const link = snapshot.val();
+                if (link) {
+                    currentTelegramLink = link;
+                    document.getElementById('telegramUserBannerLink').href = link;
+                    document.getElementById('adminTelegramLinkInput').value = link;
+                }
+            });
+        }
+
+        function updateTelegramLink() {
+            const newLink = document.getElementById('adminTelegramLinkInput').value.trim();
+            if (newLink) {
+                if (db) {
+                    db.ref('settings/telegram_link').set(newLink);
+                } else {
+                    currentTelegramLink = newLink;
+                    document.getElementById('telegramUserBannerLink').href = newLink;
+                }
+                alert("टेलीग्राम लिंक सफलतापूर्वक सेव हो गई है!");
+            }
+        }
+
+        function loadFromLocalStorage() {
+            const stored = localStorage.getItem('cine_movies');
+            if (stored) {
+                moviesData = JSON.parse(stored);
+            } else {
+                moviesData = [
+                    {
+                        id: 'm1',
+                        title: 'Pushpa: The Rise',
+                        category: 'Bollywood',
+                        image: 'https://m.media-amazon.com/images/M/MV5BMDFkYTc0MGEtZmNhMC00ZDIzLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_.jpg',
+                        link1: AD_LINK,
+                        link2: AD_LINK,
+                        desc: 'पुष्पा राज की कहानी जो एक मजदूर से लाल चंदन तस्करों का सम्राट बनता है।'
+                    }
+                ];
+                saveToLocalStorage();
+            }
+            renderMovieCards();
+            renderAdminList();
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('cine_movies', JSON.stringify(moviesData));
+        }
+
+        function setupSearchListeners() {
+            const deskInput = document.getElementById('searchInputDesktop');
+            const mobInput = document.getElementById('searchInputMobile');
+
+            const handleInput = (e) => {
+                searchQuery = e.target.value.toLowerCase().trim();
+                renderMovieCards();
+            };
+
+            if (deskInput) deskInput.addEventListener('input', handleInput);
+            if (mobInput) mobInput.addEventListener('input', handleInput);
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if (btn.innerText.includes(cat) || (cat === 'All' && btn.innerText.includes('सभी'))) {
+                    btn.classList.add('bg-white/20', 'text-white');
+                    btn.classList.remove('bg-white/5', 'text-gray-300');
+                } else {
+                    btn.classList.remove('bg-white/20', 'text-white');
+                    btn.classList.add('bg-white/5', 'text-gray-300');
+                }
+            });
+            renderMovieCards();
+        }
+
+        function renderMovieCards() {
+            const grid = document.getElementById('movieGrid');
+            const emptyState = document.getElementById('emptyState');
+            grid.innerHTML = '';
+
+            const filtered = moviesData.filter(movie => {
+                const matchesCat = (currentCategory === 'All') || (movie.category === currentCategory);
+                const matchesSearch = movie.title.toLowerCase().includes(searchQuery) || movie.desc.toLowerCase().includes(searchQuery);
+                return matchesCat && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+            } else {
+                emptyState.classList.add('hidden');
+                emptyState.classList.remove('flex');
+
+                filtered.forEach(movie => {
+                    const card = document.createElement('div');
+                    card.className = 'movie-card bg-gray-900 border border-white/10 rounded-xl overflow-hidden cursor-pointer flex flex-col group';
+                    card.onclick = () => openMovieDetailModal(movie);
+
+                    card.innerHTML = `
+                        <div class="relative aspect-[2/3] overflow-hidden bg-black/50">
+                            <img src="${movie.image}" alt="${movie.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                            <div class="absolute top-2 left-2">
+                                <span class="px-2 py-0.5 text-[9px] font-extrabold uppercase rounded bg-black/70 backdrop-blur-md text-red-400 border border-red-500/30">
+                                    ${movie.category}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-3 flex flex-col flex-grow justify-between">
+                            <h4 class="text-xs font-bold text-white line-clamp-2 leading-snug group-hover:text-red-400 transition-colors">${movie.title}</h4>
+                            <span class="text-[10px] text-gray-400 mt-2 block flex items-center">
+                                <i class="fa-solid fa-circle-play mr-1 theme-text"></i> अभी देखें
+                            </span>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+        }
+
+        function renderAdminList() {
+            const list = document.getElementById('adminMovieList');
+            const countEl = document.getElementById('totalMoviesCount');
+            if (!list) return;
+
+            list.innerHTML = '';
+            if (countEl) countEl.innerText = moviesData.length;
+
+            moviesData.forEach(movie => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between bg-black/40 border border-white/10 p-2.5 rounded-lg';
+                item.innerHTML = `
+                    <div class="flex items-center space-x-3 overflow-hidden">
+                        <img src="${movie.image}" class="w-10 h-12 object-cover rounded">
+                        <div class="truncate">
+                            <h5 class="text-xs font-bold text-white truncate">${movie.title}</h5>
+                            <span class="text-[10px] text-gray-400">${movie.category}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="editMovie('${movie.id}')" class="p-1.5 text-blue-400 hover:bg-blue-400/20 rounded"><i class="fa-solid fa-pen-to-square text-xs"></i></button>
+                        <button onclick="deleteMovie('${movie.id}')" class="p-1.5 text-red-400 hover:bg-red-400/20 rounded"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('finalImageHolder').value = evt.target.result;
+                    document.getElementById('formUrlImage').value = '';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleMovieSubmit(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editMovieId').value;
+            const title = document.getElementById('formTitle').value.trim();
+            const category = document.getElementById('formCategory').value;
+            const urlImage = document.getElementById('formUrlImage').value.trim();
+            const fileImage = document.getElementById('finalImageHolder').value;
+            const link1 = document.getElementById('formLink1').value.trim();
+            const link2 = document.getElementById('formLink2').value.trim();
+            const desc = document.getElementById('formDesc').value.trim();
+
+            const image = fileImage || urlImage || 'https://via.placeholder.com/300x450';
+            const payload = { title, category, image, link1, link2, desc };
+
+            if (db) {
+                if (editId) {
+                    db.ref('movies/' + editId).update(payload);
+                } else {
+                    db.ref('movies').push(payload);
+                }
+            } else {
+                if (editId) {
+                    const idx = moviesData.findIndex(m => m.id === editId);
+                    if (idx !== -1) moviesData[idx] = { id: editId, ...payload };
+                } else {
+                    moviesData.push({ id: 'm_' + Date.now(), ...payload });
+                }
+                saveToLocalStorage();
+                renderMovieCards();
+                renderAdminList();
+            }
+
+            document.getElementById('editMovieId').value = '';
+            document.getElementById('formTitle').value = '';
+            document.getElementById('formUrlImage').value = '';
+            document.getElementById('finalImageHolder').value = '';
+            document.getElementById('formLink1').value = '';
+            document.getElementById('formLink2').value = '';
+            document.getElementById('formDesc').value = '';
+            alert("सफलतापूर्वक सहेजा गया!");
+        }
+
+        function editMovie(id) {
+            const movie = moviesData.find(m => m.id === id);
+            if (!movie) return;
+
+            document.getElementById('editMovieId').value = movie.id;
+            document.getElementById('formTitle').value = movie.title;
+            document.getElementById('formCategory').value = movie.category;
+            document.getElementById('formUrlImage').value = movie.image;
+            document.getElementById('formLink1').value = movie.link1;
+            document.getElementById('formLink2').value = movie.link2 || '';
+            document.getElementById('formDesc').value = movie.desc;
+        }
+
+        function deleteMovie(id) {
+            if (confirm("क्या आप निश्चित रूप से इसे हटाना चाहते हैं?")) {
+                if (db) {
+                    db.ref('movies/' + id).remove();
+                } else {
+                    moviesData = moviesData.filter(m => m.id !== id);
+                    saveToLocalStorage();
+                    renderMovieCards();
+                    renderAdminList();
+                }
+            }
+        }
+
+        function openMovieDetailModal(movie) {
+            document.getElementById('modalMoviePoster').src = movie.image;
+            document.getElementById('modalMovieTitle').innerText = movie.title;
+            document.getElementById('modalMovieCategory').innerText = movie.category;
+            document.getElementById('modalMovieDesc').innerText = movie.desc;
+
+            const btn1 = document.getElementById('modalDlBtn1');
+            const btn2 = document.getElementById('modalDlBtn2');
+
+            btn1.href = movie.link1;
+            btn2.href = movie.link2 || movie.link1;
+
+            document.getElementById('movieDetailModal').classList.remove('hidden');
+        }
+
+        function closeMovieDetailModal() {
+            document.getElementById('movieDetailModal').classList.add('hidden');
+        }
+
+        function handleAdAndRedirect(e, el) {
+            window.open(AD_LINK, '_blank');
+        }
+
+        function changeAppTheme(themeClass) {
+            document.body.className = themeClass + ' min-h-screen flex flex-col';
+            if (db) {
+                db.ref('settings/theme').set(themeClass);
+            }
+        }
+
+        function openAdminModal() {
+            document.getElementById('adminAuthModal').classList.remove('hidden');
+            document.getElementById('authFormState').classList.remove('hidden');
+            document.getElementById('forgotFormState').classList.add('hidden');
+            document.getElementById('adminPassInput').value = '';
+            document.getElementById('authErrorMsg').classList.add('hidden');
+        }
+
+        function closeAdminAuthModal() {
+            document.getElementById('adminAuthModal').classList.add('hidden');
+        }
+
+        function verifyAdminPasscode(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPassInput').value;
+            if (pass === ADMIN_PASSCODE) {
+                closeAdminAuthModal();
+                document.getElementById('adminPanelModal').classList.remove('hidden');
+            } else {
+                document.getElementById('authErrorMsg').classList.remove('hidden');
+            }
+        }
+
+        function switchToForgotPassState() {
+            document.getElementById('authFormState').classList.add('hidden');
+            document.getElementById('forgotFormState').classList.remove('hidden');
+            document.getElementById('adminDobInput').value = '';
+            document.getElementById('dobErrorMsg').classList.add('hidden');
+        }
+
+        function switchToAuthPassState() {
+            document.getElementById('forgotFormState').classList.add('hidden');
+            document.getElementById('authFormState').classList.remove('hidden');
+        }
+
+        function verifyAdminDOB(e) {
+            e.preventDefault();
+            const dob = document.getElementById('adminDobInput').value.trim();
+            if (dob === RESET_DOB) {
+                alert("सत्यापन सफल! पासकोड रीसेट हो गया है।");
+                closeAdminAuthModal();
+                document.getElementById('adminPanelModal').classList.remove('hidden');
+            } else {
+                document.getElementById('dobErrorMsg').classList.remove('hidden');
+            }
+        }
+
+        function closeAdminPanelModal() {
+            document.getElementById('adminPanelModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
