@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CineStream Pro - मूवी एवं मीडिया कैटलॉग</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CineStreamPRO - Premium Video Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Chart.js Library for Analytics Line Graph -->
+    <!-- Chart.js Library for Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Firebase SDK (v8) -->
@@ -19,19 +19,29 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #0b0c10;
+            background-color: #08090c;
             color: #ffffff;
             transition: background-color 0.4s ease, color 0.4s ease;
+            user-select: none;
+        }
+
+        .brand-font {
+            font-family: 'Montserrat', sans-serif;
         }
 
         /* Dynamic Theme Palette Definitions */
         .theme-netflix {
             --primary: #e50914;
             --primary-hover: #b80710;
-            --bg-dark: #0b0c10;
-            --card-bg: #1f2833;
+            --bg-dark: #08090c;
+            --card-bg: #12161f;
             --accent: #e50914;
         }
         .theme-cyberpunk {
@@ -48,32 +58,17 @@
             --card-bg: #1e1e1e;
             --accent: #ffd700;
         }
-        .theme-emerald {
-            --primary: #10b981;
-            --primary-hover: #059669;
-            --bg-dark: #064e3b;
-            --card-bg: #022c22;
-            --accent: #34d399;
-        }
-        .theme-space {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --bg-dark: #0f172a;
-            --card-bg: #1e293b;
-            --accent: #818cf8;
-        }
 
-        .theme-btn {
-            background-color: var(--primary) !important;
+        /* Compact Mobile-Friendly Neon Toggle Button */
+        .neon-toggle-btn {
+            background: linear-gradient(135deg, #1b0a2a, #0b071e);
+            border: 1.5px solid #9333ea;
+            box-shadow: 0 0 10px rgba(147, 51, 234, 0.4);
+            transition: all 0.3s ease;
         }
-        .theme-btn:hover {
-            background-color: var(--primary-hover) !important;
-        }
-        .theme-text {
-            color: var(--primary) !important;
-        }
-        .theme-border {
-            border-color: var(--primary) !important;
+        .neon-toggle-btn:hover {
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+            border-color: #c084fc;
         }
 
         /* Movie Card Hover Animation */
@@ -81,16 +76,17 @@
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         .movie-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 14px 28px rgba(0,0,0,0.5), 0 10px 10px rgba(0,0,0,0.4);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.6);
         }
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 5px;
+            height: 5px;
         }
         ::-webkit-scrollbar-track {
-            background: #0b0c10;
+            background: #08090c;
         }
         ::-webkit-scrollbar-thumb {
             background: #1f2833;
@@ -101,40 +97,55 @@
         }
     </style>
 </head>
-<body class="theme-netflix min-h-screen flex flex-col">
+<body class="theme-netflix min-h-screen flex flex-col selection:bg-red-600 selection:text-white">
 
-    <!-- Navbar Section -->
-    <header class="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-white/10 px-4 lg:px-8 py-3 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-            <i class="fa-solid fa-film text-3xl theme-text"></i>
-            <span class="text-2xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-amber-500">
-                CineStream<span class="text-white text-xs px-2 py-0.5 rounded bg-red-600/30 ml-1 border border-red-500/50">PRO</span>
-            </span>
+    <!-- Mobile-Optimized Navbar Section -->
+    <header class="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-white/10 px-3 sm:px-6 py-2.5 flex items-center justify-between shadow-2xl">
+        
+        <!-- Professional Logo -->
+        <div class="flex items-center space-x-2.5 cursor-pointer flex-shrink-0" onclick="event.preventDefault(); filterCategory('All');">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-red-600 via-red-500 to-amber-500 flex items-center justify-center text-white text-base shadow-lg shadow-red-900/40 border border-white/20">
+                <i class="fa-solid fa-play"></i>
+            </div>
+            <div class="flex flex-col">
+                <span class="brand-font text-xl sm:text-2xl font-black tracking-wider text-white leading-none">
+                    CineStream<span class="text-red-500">PRO</span>
+                </span>
+                <span class="text-[8px] text-gray-400 tracking-widest font-semibold uppercase mt-0.5">HD Portal</span>
+            </div>
         </div>
 
-        <div class="flex items-center space-x-4">
-            <!-- Search Input in Header (Desktop) -->
-            <div class="relative hidden md:block w-72">
-                <input type="text" id="searchInputDesktop" placeholder="मूवी, शो या श्रेणी खोजें..." 
-                    class="w-full bg-white/5 text-sm rounded-full pl-10 pr-4 py-2 border border-white/10 focus:outline-none focus:border-red-500 text-white placeholder-gray-400">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-gray-400 text-sm"></i>
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <!-- Search Input in Header (Desktop Only) -->
+            <div class="relative hidden md:block w-64">
+                <input type="text" id="searchInputDesktop" placeholder="Search Movies..." 
+                    class="w-full bg-white/5 text-xs rounded-full pl-9 pr-3 py-1.5 border border-white/10 focus:outline-none focus:border-red-500 text-white placeholder-gray-400">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2 text-gray-400 text-xs"></i>
             </div>
 
-            <!-- Admin Profile Access Button -->
-            <button onclick="openAdminModal()" title="एडमिन लॉग इन" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/20 transition-all">
-                <i class="fa-solid fa-user-shield text-lg theme-text"></i>
+            <!-- Language Switcher (Always Defaults to EN) -->
+            <button onclick="toggleAppLanguage()" id="langToggleBtn" class="px-2 py-1 rounded-lg bg-white/10 border border-white/15 text-[11px] font-bold text-white flex items-center space-x-1 hover:bg-white/20 transition-all">
+                <i class="fa-solid fa-globe text-sky-400"></i>
+                <span id="currentLangText">EN</span>
             </button>
+
+            <!-- Perfectly Adjusted Compact Neon Toggle Button (Secret Admin Access) -->
+            <div onclick="handleSecretToggleClick()" class="neon-toggle-btn px-2.5 py-1 rounded-full flex items-center space-x-2 cursor-pointer flex-shrink-0">
+                <i class="fa-solid fa-moon text-sky-400 text-xs drop-shadow-[0_0_5px_rgba(56,189,248,0.8)]"></i>
+                <span class="text-[10px] font-bold text-white tracking-wide hidden sm:inline">Dark</span>
+                <div class="w-3.5 h-3.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 shadow-[0_0_8px_#38bdf8] transition-transform duration-300 transform" id="toggleDot"></div>
+            </div>
         </div>
     </header>
 
     <!-- Top Banner Ad Box Container -->
-    <div class="w-full bg-black/40 py-3 border-b border-white/10 flex flex-col items-center justify-center min-h-[85px]">
-        <div class="text-[10px] text-gray-400 uppercase tracking-widest mb-1.5 font-semibold">
+    <div class="w-full bg-black/60 py-2 border-b border-white/10 flex flex-col items-center justify-center min-h-[75px]">
+        <div class="text-[9px] text-gray-400 uppercase tracking-widest mb-1 font-semibold flex items-center">
             <i class="fa-solid fa-rectangle-ad text-yellow-500 mr-1"></i> SPONSORED ADVERTISEMENT
         </div>
         
-        <!-- Fixed 468x60 Responsive Box -->
-        <div class="w-[468px] max-w-full h-[60px] bg-black/60 border border-white/10 rounded-lg overflow-hidden flex items-center justify-center shadow-inner">
+        <!-- Fixed 468x60 Banner Box -->
+        <div class="w-[468px] max-w-full h-[60px] bg-black/80 border border-white/10 rounded-lg overflow-hidden flex items-center justify-center shadow-inner">
             <script>
               atOptions = {
                 'key' : '948025ec81d2e6ebbd59049304441e15',
@@ -148,343 +159,394 @@
         </div>
     </div>
 
-    <!-- Professional Telegram Banner Box (Below Ad Banner) -->
-    <div class="container mx-auto px-4 pt-4">
-        <a id="telegramUserBannerLink" href="https://t.me/" target="_blank" class="block w-full bg-gradient-to-r from-sky-600/90 via-blue-600/90 to-sky-700/90 hover:from-sky-500 hover:to-blue-600 text-white border border-sky-400/40 rounded-2xl p-3 sm:p-4 shadow-lg shadow-sky-900/20 transition-all transform hover:-translate-y-0.5">
+    <!-- Professional Telegram Banner Box -->
+    <div id="telegramBannerContainer" class="container mx-auto px-3 sm:px-4 pt-3">
+        <a id="telegramUserBannerLink" href="https://t.me/" target="_blank" onclick="event.stopPropagation();" class="block w-full bg-gradient-to-r from-sky-600/90 via-blue-600/90 to-sky-700/90 hover:from-sky-500 hover:to-blue-600 text-white border border-sky-400/40 rounded-xl p-3 shadow-lg transition-all transform hover:-translate-y-0.5">
             <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3 sm:space-x-4">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-2xl sm:text-3xl shadow-inner flex-shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-xl sm:text-2xl shadow-inner flex-shrink-0">
                         <i class="fa-brands fa-telegram"></i>
                     </div>
                     <div>
-                        <h4 class="text-xs sm:text-sm font-extrabold tracking-wide uppercase text-sky-200">टेलीग्राम सपोर्ट हेल्पडेस्क</h4>
-                        <p class="text-xs sm:text-base font-bold text-white mt-0.5">मूवी नहीं मिल रही हो तो इस टेलीग्राम पर ओके करें 🚀</p>
+                        <h4 class="text-[11px] sm:text-xs font-extrabold tracking-wide uppercase text-sky-200">TELEGRAM SUPPORT HELPDESK</h4>
+                        <p id="telegramTextDesc" class="text-xs sm:text-sm font-bold text-white mt-0.5">If movie is missing, click here to request on Telegram 🚀</p>
                     </div>
                 </div>
-                <div class="hidden sm:flex items-center space-x-1 bg-white text-sky-600 px-4 py-2 rounded-xl font-extrabold text-xs shadow-md">
-                    <span>JOIN NOW</span>
-                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                <div class="hidden sm:flex items-center space-x-1 bg-white text-sky-600 px-3 py-1.5 rounded-lg font-extrabold text-[11px] shadow-md">
+                    <span>JOIN</span>
+                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
                 </div>
             </div>
         </a>
     </div>
 
     <!-- Main Content Area -->
-    <main class="flex-grow container mx-auto px-4 py-6">
+    <main class="flex-grow container mx-auto px-3 sm:px-4 py-4">
 
         <!-- Mobile Search Bar -->
-        <div class="block md:hidden mb-6">
+        <div class="block md:hidden mb-4">
             <div class="relative w-full">
-                <input type="text" id="searchInputMobile" placeholder="मूवी, शो या श्रेणी खोजें..." 
-                    class="w-full bg-white/5 text-sm rounded-xl pl-10 pr-4 py-3 border border-white/10 focus:outline-none focus:border-red-500 text-white placeholder-gray-400">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-gray-400 text-sm"></i>
+                <input type="text" id="searchInputMobile" placeholder="Search Movies, Shows..." 
+                    class="w-full bg-white/5 text-xs rounded-xl pl-9 pr-3 py-2.5 border border-white/10 focus:outline-none focus:border-red-500 text-white placeholder-gray-400">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
             </div>
         </div>
 
         <!-- Category Filters -->
-        <div class="flex items-center space-x-2 overflow-x-auto pb-4 scrollbar-none mb-6">
-            <button onclick="filterCategory('All')" class="category-btn active px-4 py-1.5 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/20 whitespace-nowrap border border-white/10">सभी (All)</button>
-            <button onclick="filterCategory('Bollywood')" class="category-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/20 whitespace-nowrap border border-white/10 text-gray-300">बॉलीवुड</button>
-            <button onclick="filterCategory('Hollywood')" class="category-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/20 whitespace-nowrap border border-white/10 text-gray-300">हॉलीवुड</button>
-            <button onclick="filterCategory('South Hindi')" class="category-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/20 whitespace-nowrap border border-white/10 text-gray-300">साउथ हिंदी</button>
-            <button onclick="filterCategory('Web Series')" class="category-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/20 whitespace-nowrap border border-white/10 text-gray-300">वेब सीरीज़</button>
+        <div class="flex items-center space-x-2 overflow-x-auto pb-3 scrollbar-none mb-4">
+            <button onclick="filterCategory('All')" class="category-btn active px-4 py-1.5 rounded-lg text-xs font-bold bg-red-600 text-white whitespace-nowrap border border-red-500 shadow-md">All Content</button>
+            <button onclick="filterCategory('Bollywood')" class="category-btn px-4 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/15 whitespace-nowrap border border-white/10 text-gray-300">Bollywood</button>
+            <button onclick="filterCategory('Hollywood')" class="category-btn px-4 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/15 whitespace-nowrap border border-white/10 text-gray-300">Hollywood</button>
+            <button onclick="filterCategory('South Hindi')" class="category-btn px-4 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/15 whitespace-nowrap border border-white/10 text-gray-300">South Dubbed</button>
+            <button onclick="filterCategory('Web Series')" class="category-btn px-4 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/15 whitespace-nowrap border border-white/10 text-gray-300">Web Series</button>
         </div>
 
         <!-- Movie Cards Grid -->
-        <div id="movieGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+        <div id="movieGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
             <!-- Dynamic Movie Cards Rendered Here -->
         </div>
 
         <!-- Empty State -->
-        <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center">
-            <i class="fa-solid fa-film-slash text-5xl text-gray-600 mb-4"></i>
-            <h3 class="text-xl font-bold text-gray-400">कोई मूवी नहीं मिली!</h3>
-            <p class="text-sm text-gray-500 mt-1">कृपया कोई दूसरा नाम खोजें या श्रेणी बदलें।</p>
+        <div id="emptyState" class="hidden flex-col items-center justify-center py-16 text-center">
+            <i class="fa-solid fa-film-slash text-4xl text-gray-600 mb-3"></i>
+            <h3 class="text-lg font-bold text-gray-400" id="emptyTitle">No Content Found!</h3>
+            <p class="text-xs text-gray-500 mt-1" id="emptySub">Please try searching another title or category.</p>
         </div>
     </main>
 
-    <!-- User Movie Details & Download Modal -->
-    <div id="movieDetailModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-gray-900 border border-white/10 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col">
-            <button onclick="closeMovieDetailModal()" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/60 text-white hover:bg-red-600 flex items-center justify-center transition-all border border-white/20">
+    <!-- Professional Video Player / Download Modal -->
+    <div id="movieDetailModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-3">
+        <div class="bg-gray-950 border border-white/10 rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl relative max-h-[92vh] flex flex-col">
+            
+            <button onclick="closeMovieDetailModal()" class="absolute top-2.5 right-2.5 z-20 w-7 h-7 rounded-full bg-black/80 text-white hover:bg-red-600 flex items-center justify-center transition-all border border-white/20 text-xs">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             
-            <div class="overflow-y-auto p-5 space-y-4">
+            <div class="overflow-y-auto p-4 space-y-3">
                 
                 <!-- Fixed Poster Section (Maintains 2:3 Aspect Ratio) -->
-                <div class="w-full flex justify-center">
-                    <div class="w-48 sm:w-56 aspect-[2/3] relative overflow-hidden rounded-xl border border-white/10 shadow-2xl bg-black/60">
+                <div class="w-full flex flex-col items-center">
+                    <div class="w-40 sm:w-48 aspect-[2/3] relative overflow-hidden rounded-xl border border-white/15 shadow-2xl bg-black">
                         <img id="modalMoviePoster" src="" alt="Poster" class="w-full h-full object-cover">
+                    </div>
+
+                    <!-- Bottom Banner Ad Right Below Movie Poster Photo -->
+                    <div class="w-full mt-2.5 bg-black/60 border border-white/10 rounded-lg p-1 flex flex-col items-center justify-center">
+                        <span class="text-[8px] text-gray-500 uppercase tracking-widest mb-0.5">Sponsored Ad</span>
+                        <div class="w-full overflow-hidden flex justify-center items-center max-h-[60px]">
+                            <script>
+                              atOptions = {
+                                'key' : '948025ec81d2e6ebbd59049304441e15',
+                                'format' : 'iframe',
+                                'height' : 60,
+                                'width' : 468,
+                                'params' : {}
+                              };
+                            </script>
+                            <script src="https://ourselvesincompetentlearned.com/948025ec81d2e6ebbd59049304441e15/invoke.js"></script>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Info Section -->
-                <div class="text-center space-y-2">
-                    <span id="modalMovieCategory" class="inline-block px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-red-600/20 text-red-400 border border-red-500/30">Category</span>
-                    <h2 id="modalMovieTitle" class="text-xl font-bold text-white">Movie Title</h2>
-                    <p id="modalMovieDesc" class="text-xs text-gray-300 leading-relaxed px-2">Description goes here...</p>
+                <div class="text-center space-y-1">
+                    <span id="modalMovieCategory" class="inline-block px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-md bg-red-600/20 text-red-400 border border-red-500/30">Category</span>
+                    <h2 id="modalMovieTitle" class="text-lg font-bold text-white leading-snug">Movie Title</h2>
+                    <p id="modalMovieDesc" class="text-[11px] text-gray-300 leading-relaxed px-1">Description goes here...</p>
                 </div>
 
-                <!-- Sponsored Ad Display Frame -->
-                <div class="bg-black/50 border border-yellow-500/30 rounded-xl p-3 text-center space-y-2">
-                    <div class="text-[10px] text-yellow-500 font-semibold uppercase tracking-wider">
-                        <i class="fa-solid fa-rectangle-ad mr-1"></i> स्पॉन्सर्ड विज्ञापन
-                    </div>
-                    <div class="py-1 flex justify-center items-center overflow-hidden">
-                         <a href="https://ourselvesincompetentlearned.com/n3ekr8j6?key=065cf53aa3bf38722db0e76ab9572979" target="_blank" class="w-full py-2 bg-gradient-to-r from-yellow-600 to-amber-500 text-black text-xs font-bold rounded-lg block hover:opacity-90">
-                            🔥 क्लिक करें और स्पेशल ऑफर देखें
-                         </a>
-                    </div>
-                </div>
-
-                <!-- Download Buttons Section -->
-                <div class="space-y-2 pt-1">
-                    <h4 class="text-[11px] font-bold uppercase tracking-wider text-gray-400 text-center">एचडी डाउनलोड और वॉच लिंक्स:</h4>
+                <!-- Redesigned Video Player Box with Timed Ad Reward Logic -->
+                <div class="bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-xl p-3 text-center space-y-2.5 shadow-inner">
                     
-                    <a id="modalDlBtn1" href="#" onclick="handleAdAndRedirect(event, this)" target="_blank" class="w-full py-3 px-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between shadow-lg shadow-red-900/30 transition-all">
-                        <span><i class="fa-solid fa-bolt mr-2"></i> सर्वर 1 - 4K Ultra HD</span>
-                        <i class="fa-solid fa-download text-xs"></i>
-                    </a>
+                    <div id="playerStatusNotice" class="text-[11px] font-semibold text-amber-400 flex items-center justify-center space-x-1">
+                        <i id="statusIcon" class="fa-solid fa-shield-halved"></i>
+                        <span id="statusText">Click button below to watch full video</span>
+                    </div>
 
-                    <a id="modalDlBtn2" href="#" onclick="handleAdAndRedirect(event, this)" target="_blank" class="w-full py-3 px-4 bg-white/10 hover:bg-white/20 text-white border border-white/10 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-between transition-all">
-                        <span><i class="fa-solid fa-cloud-arrow-down mr-2 text-blue-400"></i> सर्वर 2 - 1080p फास्ट क्लाउड</span>
-                        <i class="fa-solid fa-arrow-right text-xs text-gray-400"></i>
-                    </a>
+                    <!-- Main Watch / Play Video Button -->
+                    <button id="mainPlayVideoBtn" onclick="handleSmartVideoPlay()" class="w-full py-3 px-3 bg-gradient-to-r from-red-600 via-red-500 to-amber-600 hover:from-red-700 hover:to-amber-700 text-white font-extrabold rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-xl transition-all">
+                        <i id="playBtnIcon" class="fa-solid fa-circle-play text-lg"></i>
+                        <span id="playBtnText">▶️ Watch Video / Play Now</span>
+                    </button>
+
+                    <!-- Backup Server Button -->
+                    <div id="backupServerBox" class="hidden pt-2 border-t border-white/10 flex flex-col space-y-1.5">
+                        <span class="text-[9px] text-gray-400 uppercase font-semibold">Backup Streaming Server (Server 2)</span>
+                        <a id="backupServerBtn" href="#" target="_blank" class="w-full py-2 bg-white/10 hover:bg-white/20 text-white border border-white/10 rounded-lg font-bold text-[11px] flex items-center justify-center space-x-1.5">
+                            <i class="fa-solid fa-server text-blue-400"></i>
+                            <span>Watch Server 2 (1080p Fast Cloud)</span>
+                        </a>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
 
     <!-- Admin Authentication Modal (Passcode Protected) -->
-    <div id="adminAuthModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-gray-900 border border-white/10 rounded-2xl max-w-md w-full p-6 relative shadow-2xl">
+    <div id="adminAuthModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-gray-950 border border-white/10 rounded-2xl max-w-sm w-full p-5 relative shadow-2xl">
             <button onclick="closeAdminAuthModal()" class="absolute top-3 right-3 text-gray-400 hover:text-white">
-                <i class="fa-solid fa-xmark text-lg"></i>
+                <i class="fa-solid fa-xmark text-base"></i>
             </button>
             
             <div id="authFormState">
-                <div class="text-center mb-6">
-                    <div class="w-12 h-12 rounded-full bg-red-600/20 border border-red-500/40 text-red-500 flex items-center justify-center mx-auto mb-3">
-                        <i class="fa-solid fa-lock text-xl"></i>
+                <div class="text-center mb-5">
+                    <div class="w-10 h-10 rounded-full bg-red-600/20 border border-red-500/40 text-red-500 flex items-center justify-center mx-auto mb-2.5">
+                        <i class="fa-solid fa-lock text-lg"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white">एडमिन सत्यापन</h3>
-                    <p class="text-xs text-gray-400 mt-1">एडमिन पैनल एक्सेस करने के लिए पासकोड दर्ज करें</p>
+                    <h3 class="text-lg font-bold text-white">Admin Verification</h3>
+                    <p class="text-[11px] text-gray-400 mt-0.5">Enter security passcode to unlock admin panel</p>
                 </div>
 
-                <form onsubmit="verifyAdminPasscode(event)" class="space-y-4">
+                <form onsubmit="verifyAdminPasscode(event)" class="space-y-3.5">
                     <div>
-                        <label class="block text-xs text-gray-400 mb-1">सुरक्षा पासकोड</label>
-                        <input type="password" id="adminPassInput" required class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-red-500 text-center tracking-widest text-lg">
+                        <label class="block text-[11px] text-gray-400 mb-1">Security Passcode</label>
+                        <input type="password" id="adminPassInput" required class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-red-500 text-center tracking-widest text-base">
                     </div>
 
-                    <p id="authErrorMsg" class="text-xs text-red-500 text-center hidden">गलत पासकोड! पुनः प्रयास करें।</p>
+                    <p id="authErrorMsg" class="text-[11px] text-red-500 text-center hidden">Incorrect Passcode! Try again.</p>
 
-                    <button type="submit" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-red-900/30">
-                        अनलॉक करें
+                    <button type="submit" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs transition-all shadow-lg">
+                        Unlock Admin Dashboard
                     </button>
                 </form>
 
-                <div class="text-center mt-4">
-                    <button onclick="switchToForgotPassState()" class="text-xs text-gray-400 hover:text-red-400 underline">🔑 पासवर्ड भूल गए?</button>
+                <div class="text-center mt-3">
+                    <button onclick="switchToForgotPassState()" class="text-[11px] text-gray-400 hover:text-red-400 underline">🔑 Forgot Passcode?</button>
                 </div>
             </div>
 
             <!-- Forgot Password State -->
             <div id="forgotFormState" class="hidden">
-                <div class="text-center mb-6">
-                    <div class="w-12 h-12 rounded-full bg-amber-600/20 border border-amber-500/40 text-amber-500 flex items-center justify-center mx-auto mb-3">
-                        <i class="fa-solid fa-key text-xl"></i>
+                <div class="text-center mb-5">
+                    <div class="w-10 h-10 rounded-full bg-amber-600/20 border border-amber-500/40 text-amber-500 flex items-center justify-center mx-auto mb-2.5">
+                        <i class="fa-solid fa-key text-lg"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white">पासवर्ड रीसेट करें</h3>
-                    <p class="text-xs text-gray-400 mt-1">सत्यापन के लिए जन्मतिथि दर्ज करें</p>
+                    <h3 class="text-lg font-bold text-white">Reset Passcode</h3>
+                    <p class="text-[11px] text-gray-400 mt-0.5">Enter Date of Birth for verification</p>
                 </div>
 
-                <form onsubmit="verifyAdminDOB(event)" class="space-y-4">
+                <form onsubmit="verifyAdminDOB(event)" class="space-y-3.5">
                     <div>
-                        <label class="block text-xs text-gray-400 mb-1">जन्मतिथि (DD/MM/YYYY)</label>
-                        <input type="password" id="adminDobInput" required class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 text-center tracking-widest text-base">
+                        <label class="block text-[11px] text-gray-400 mb-1">Date of Birth (DD/MM/YYYY)</label>
+                        <input type="password" id="adminDobInput" required class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500 text-center tracking-widest text-sm">
                     </div>
 
-                    <p id="dobErrorMsg" class="text-xs text-red-500 text-center hidden">गलत जन्मतिथि!</p>
+                    <p id="dobErrorMsg" class="text-[11px] text-red-500 text-center hidden">Incorrect Date of Birth!</p>
 
-                    <button type="submit" class="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-amber-900/30">
-                        सत्यापित करें
+                    <button type="submit" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs transition-all shadow-lg">
+                        Verify Recovery DOB
                     </button>
                 </form>
 
-                <div class="text-center mt-4">
-                    <button onclick="switchToAuthPassState()" class="text-xs text-gray-400 hover:text-white underline">वापस जाएँ</button>
+                <div class="text-center mt-3">
+                    <button onclick="switchToAuthPassState()" class="text-[11px] text-gray-400 hover:text-white underline">Back to Login</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Professional Admin Panel with Line Graph & Telegram Settings -->
-    <div id="adminPanelModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-gray-900 border border-white/10 rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
-            <div class="p-4 bg-black/40 border-b border-white/10 flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-user-gear theme-text text-xl"></i>
-                    <h3 class="text-lg font-bold text-white">प्रोफ़ेशनल एडमिन कंट्रोल पैनल</h3>
-                </div>
+    <!-- Admin Dashboard Modal -->
+    <div id="adminPanelModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-2 sm:p-5">
+        <div class="bg-gray-950 border border-white/10 rounded-2xl w-full max-w-5xl h-[92vh] flex flex-col md:flex-row overflow-hidden shadow-2xl relative">
+            
+            <div class="md:hidden p-3 bg-black/80 border-b border-white/10 flex items-center justify-between">
+                <button onclick="toggleAdminSidebar()" class="p-1.5 text-white bg-white/10 rounded-lg text-sm">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <span class="text-xs font-bold text-white">CineStreamPRO Admin</span>
                 <button onclick="closeAdminPanelModal()" class="text-gray-400 hover:text-white">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                    <i class="fa-solid fa-xmark text-base"></i>
                 </button>
             </div>
 
-            <div class="overflow-y-auto p-6 space-y-6">
-                
-                <!-- Live Stats Summary Row -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <!-- Realtime Active Counter -->
-                    <div class="p-4 bg-gradient-to-br from-green-900/30 to-emerald-900/10 border border-green-500/30 rounded-xl flex items-center justify-between">
-                        <div>
-                            <span class="text-[11px] text-green-400 font-bold uppercase tracking-wider block">🟢 लाइव ऑनलाइन</span>
-                            <span id="activeUserCount" class="text-2xl font-extrabold text-white mt-1 block">1</span>
-                        </div>
-                        <i class="fa-solid fa-users text-2xl text-green-500/50"></i>
+            <!-- Desktop Drawer Sidebar -->
+            <aside id="adminSidebarDrawer" class="w-full md:w-56 bg-black/90 border-r border-white/10 flex flex-col justify-between hidden md:flex transition-all">
+                <div class="p-4 space-y-5">
+                    <div class="hidden md:flex items-center space-x-2">
+                        <i class="fa-solid fa-video text-red-500 text-lg"></i>
+                        <span class="font-extrabold text-base tracking-wider text-white">CineStreamPRO</span>
                     </div>
 
-                    <!-- Today's Total Visitors -->
-                    <div class="p-4 bg-gradient-to-br from-blue-900/30 to-indigo-900/10 border border-blue-500/30 rounded-xl flex items-center justify-between">
-                        <div>
-                            <span class="text-[11px] text-blue-400 font-bold uppercase tracking-wider block">आज के यूज़र्स</span>
-                            <span id="todayVisitorCount" class="text-2xl font-extrabold text-white mt-1 block">0</span>
-                        </div>
-                        <i class="fa-solid fa-chart-line text-2xl text-blue-500/50"></i>
-                    </div>
-
-                    <!-- Total Historical Visitors -->
-                    <div class="p-4 bg-gradient-to-br from-purple-900/30 to-fuchsia-900/10 border border-purple-500/30 rounded-xl flex items-center justify-between">
-                        <div>
-                            <span class="text-[11px] text-purple-400 font-bold uppercase tracking-wider block">कुल विज़िटर्स</span>
-                            <span id="totalVisitorCount" class="text-2xl font-extrabold text-white mt-1 block">0</span>
-                        </div>
-                        <i class="fa-solid fa-eye text-2xl text-purple-500/50"></i>
-                    </div>
-                </div>
-
-                <!-- Telegram Link Admin Control Box -->
-                <div class="bg-gradient-to-r from-sky-900/30 to-blue-900/20 border border-sky-500/30 rounded-xl p-4 space-y-3">
-                    <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center">
-                        <i class="fa-brands fa-telegram text-sky-400 text-base mr-2"></i> टेलीग्राम लिंक मैनेजमेंट (Telegram Link Settings)
-                    </h4>
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <input type="url" id="adminTelegramLinkInput" placeholder="https://t.me/your_channel_link" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-400">
-                        <button onclick="updateTelegramLink()" class="px-5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-lg text-xs whitespace-nowrap transition-all shadow-md">
-                            लिंक सेव करें
+                    <nav class="space-y-1">
+                        <button onclick="switchAdminTab('tab-analytics')" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5 text-red-400 bg-red-600/10 border border-red-500/20">
+                            <i class="fa-solid fa-chart-line text-xs"></i>
+                            <span>Analytics</span>
                         </button>
-                    </div>
+                        <button onclick="switchAdminTab('tab-add-movie')" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5 text-gray-400 hover:text-white hover:bg-white/5">
+                            <i class="fa-solid fa-plus-circle text-xs"></i>
+                            <span>Add Content</span>
+                        </button>
+                        <button onclick="switchAdminTab('tab-manage-movies')" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5 text-gray-400 hover:text-white hover:bg-white/5">
+                            <i class="fa-solid fa-list text-xs"></i>
+                            <span>Manage Content</span>
+                        </button>
+                        <button onclick="switchAdminTab('tab-settings')" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5 text-gray-400 hover:text-white hover:bg-white/5">
+                            <i class="fa-solid fa-sliders text-xs"></i>
+                            <span>Settings</span>
+                        </button>
+                    </nav>
                 </div>
 
-                <!-- Professional Analytics Line Chart Section -->
-                <div class="bg-white/5 border border-white/10 rounded-xl p-5 space-y-3">
-                    <div class="flex items-center justify-between border-b border-white/10 pb-2">
-                        <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center">
-                            <i class="fa-solid fa-chart-area theme-text mr-2"></i> विज़िटर एनालिटिक्स - पिछले 7 दिन (Line Chart)
+                <div class="p-3 border-t border-white/10 hidden md:block">
+                    <button onclick="closeAdminPanelModal()" class="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold transition-all">
+                        Exit Admin
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Desktop Admin Workspace Panel -->
+            <main class="flex-grow overflow-y-auto p-4 space-y-5">
+                
+                <button onclick="closeAdminPanelModal()" class="hidden md:flex absolute top-3 right-3 w-8 h-8 rounded-full bg-white/10 text-white hover:bg-red-600 items-center justify-center transition-all z-10 text-xs">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <!-- SECTION 1: Analytics Dashboard -->
+                <div id="tab-analytics" class="admin-tab-content space-y-5">
+                    <h3 class="text-sm font-bold text-white border-b border-white/10 pb-2">📊 Realtime Visitor Analytics</h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="p-3 bg-gradient-to-br from-green-900/30 to-emerald-900/10 border border-green-500/30 rounded-xl flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] text-green-400 font-bold uppercase tracking-wider block">🟢 Live Active</span>
+                                <span id="activeUserCount" class="text-2xl font-black text-white mt-0.5 block">1</span>
+                            </div>
+                            <i class="fa-solid fa-users text-2xl text-green-500/40"></i>
+                        </div>
+
+                        <div class="p-3 bg-gradient-to-br from-blue-900/30 to-indigo-900/10 border border-blue-500/30 rounded-xl flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] text-blue-400 font-bold uppercase tracking-wider block">Today's Visitors</span>
+                                <span id="todayVisitorCount" class="text-2xl font-black text-white mt-0.5 block">0</span>
+                            </div>
+                            <i class="fa-solid fa-chart-line text-2xl text-blue-500/40"></i>
+                        </div>
+
+                        <div class="p-3 bg-gradient-to-br from-purple-900/30 to-fuchsia-900/10 border border-purple-500/30 rounded-xl flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] text-purple-400 font-bold uppercase tracking-wider block">Total Visitors</span>
+                                <span id="totalVisitorCount" class="text-2xl font-black text-white mt-0.5 block">0</span>
+                            </div>
+                            <i class="fa-solid fa-eye text-2xl text-purple-500/40"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-black/50 border border-white/10 rounded-xl p-4 space-y-2">
+                        <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center border-b border-white/10 pb-2">
+                            <i class="fa-solid fa-chart-area text-red-500 mr-2"></i> Daily Visitor Traffic Trend
                         </h4>
-                        <span class="text-[10px] text-gray-400 bg-black/40 px-2 py-1 rounded">Daily Traffic Trend</span>
-                    </div>
-
-                    <!-- Line Canvas element -->
-                    <div class="relative w-full h-60">
-                        <canvas id="visitorChart"></canvas>
+                        <div class="relative w-full h-56">
+                            <canvas id="visitorChart"></canvas>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Theme Switcher & Controls -->
-                <div class="p-4 bg-white/5 border border-white/10 rounded-xl space-y-2">
-                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider block">ऐप थीम चुनें (App Theme)</label>
-                    <select id="themeSelector" onchange="changeAppTheme(this.value)" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
-                        <option value="theme-netflix">🔴 Netflix Red (Classic Dark)</option>
-                        <option value="theme-cyberpunk">⚡ Cyberpunk Neon</option>
-                        <option value="theme-gold">👑 Royal Gold</option>
-                        <option value="theme-emerald">🟢 Emerald Green</option>
-                        <option value="theme-space">🌌 Deep Space Blue</option>
-                    </select>
-                </div>
+                <!-- SECTION 2: Add Movie/Video -->
+                <div id="tab-add-movie" class="admin-tab-content space-y-3.5 hidden">
+                    <h3 class="text-sm font-bold text-white border-b border-white/10 pb-2">🎬 Add New Movie / Video Link</h3>
 
-                <!-- Add New Movie Form -->
-                <div class="bg-white/5 border border-white/10 rounded-xl p-5 space-y-4">
-                    <h4 class="text-sm font-bold text-white uppercase tracking-wider border-b border-white/10 pb-2">
-                        <i class="fa-solid fa-plus-circle text-red-500 mr-2"></i>नई मूवी / शो जोड़ें
-                    </h4>
-
-                    <form onsubmit="handleMovieSubmit(event)" class="space-y-4">
+                    <form onsubmit="handleMovieSubmit(event)" class="space-y-3.5">
                         <input type="hidden" id="editMovieId" value="">
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs text-gray-400 mb-1">मूवी / शो का नाम *</label>
-                                <input type="text" id="formTitle" required placeholder="उदाहरण: Jawan (2023)" class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                                <label class="block text-[11px] text-gray-400 mb-1">Movie / Video Title *</label>
+                                <input type="text" id="formTitle" required placeholder="e.g. Jawan (2023) Ultra HD" class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500">
                             </div>
 
                             <div>
-                                <label class="block text-xs text-gray-400 mb-1">श्रेणी (Category) *</label>
-                                <select id="formCategory" required class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
-                                    <option value="Bollywood">बॉलीवुड</option>
-                                    <option value="Hollywood">हॉलीवुड</option>
-                                    <option value="South Hindi">साउथ हिंदी</option>
-                                    <option value="Web Series">वेब सीरीज़</option>
+                                <label class="block text-[11px] text-gray-400 mb-1">Category *</label>
+                                <select id="formCategory" required class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500">
+                                    <option value="Bollywood">Bollywood</option>
+                                    <option value="Hollywood">Hollywood</option>
+                                    <option value="South Hindi">South Dubbed</option>
+                                    <option value="Web Series">Web Series</option>
                                 </select>
                             </div>
                         </div>
 
-                        <!-- Image Upload Options -->
-                        <div class="space-y-2">
-                            <label class="block text-xs text-gray-400">फोटो/पोस्टर अपलोड करें *</label>
+                        <!-- Poster Image Options -->
+                        <div class="space-y-1.5">
+                            <label class="block text-[11px] text-gray-400">Upload Poster / Photo *</label>
                             
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <div class="relative border border-dashed border-white/20 rounded-lg p-3 text-center bg-black/20 hover:bg-black/40 cursor-pointer">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                                <div class="relative border border-dashed border-white/20 rounded-xl p-2.5 text-center bg-black/30 hover:bg-black/50 cursor-pointer">
                                     <input type="file" id="formFileImage" accept="image/*" onchange="handleFileSelect(event)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
-                                    <i class="fa-solid fa-cloud-arrow-up text-lg text-gray-400 mb-1"></i>
-                                    <span class="block text-xs text-gray-300">फ़ाइल से फोटो चुनें</span>
+                                    <i class="fa-solid fa-cloud-arrow-up text-lg text-gray-400 mb-0.5"></i>
+                                    <span class="block text-[11px] text-gray-300">Choose File From Device</span>
                                 </div>
 
                                 <div>
-                                    <input type="url" id="formUrlImage" placeholder="या फोटो लिंक (ImgBB / URL) चिपकाएँ" class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-3 text-xs text-white focus:outline-none focus:border-red-500 h-full">
+                                    <input type="url" id="formUrlImage" placeholder="Or Paste Online Image URL" class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500 h-full">
                                 </div>
                             </div>
                             <input type="hidden" id="finalImageHolder" value="">
                         </div>
 
-                        <!-- Download & Target Links -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Streaming Video / Download Links -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs text-gray-400 mb-1">मूवी डाउनलोड लिंक 1 (Server 1) *</label>
-                                <input type="url" id="formLink1" required placeholder="https://..." class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                                <label class="block text-[11px] text-gray-400 mb-1">Main Video Link (Server 1) *</label>
+                                <input type="url" id="formLink1" required placeholder="https://..." class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500">
                             </div>
 
                             <div>
-                                <label class="block text-xs text-gray-400 mb-1">मूवी डाउनलोड लिंक 2 (Server 2)</label>
-                                <input type="url" id="formLink2" placeholder="https://..." class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                                <label class="block text-[11px] text-gray-400 mb-1">Backup Video Link (Server 2)</label>
+                                <input type="url" id="formLink2" placeholder="https://..." class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs text-gray-400 mb-1">मूवी डिस्क्रिप्शन *</label>
-                            <textarea id="formDesc" rows="3" required placeholder="फिल्म के बारे में विवरण लिखें..." class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500"></textarea>
+                            <label class="block text-[11px] text-gray-400 mb-1">Movie Story Description *</label>
+                            <textarea id="formDesc" rows="2.5" required placeholder="Write brief plot description..." class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500"></textarea>
                         </div>
 
-                        <button type="submit" id="submitMovieBtn" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-red-900/30">
-                            सबमिट करें / पब्लिश करें
+                        <button type="submit" id="submitMovieBtn" class="w-full py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-extrabold rounded-xl text-xs transition-all shadow-lg">
+                            Publish Content Now
                         </button>
                     </form>
                 </div>
 
-                <!-- Existing Content List Management -->
-                <div class="bg-white/5 border border-white/10 rounded-xl p-5 space-y-4">
-                    <h4 class="text-sm font-bold text-white uppercase tracking-wider border-b border-white/10 pb-2">
-                        मौजूदा मूवीज मैनेज करें (<span id="totalMoviesCount">0</span>)
-                    </h4>
+                <!-- SECTION 3: Content List Management -->
+                <div id="tab-manage-movies" class="admin-tab-content space-y-3.5 hidden">
+                    <h3 class="text-sm font-bold text-white border-b border-white/10 pb-2">
+                        Manage Existing Content (<span id="totalMoviesCount">0</span>)
+                    </h3>
 
-                    <div id="adminMovieList" class="space-y-3 max-h-60 overflow-y-auto pr-1">
+                    <div id="adminMovieList" class="space-y-2.5 max-h-[55vh] overflow-y-auto pr-1">
                         <!-- Admin Manage Cards Rendered Here -->
                     </div>
                 </div>
 
-            </div>
+                <!-- SECTION 4: App Settings & Telegram Switch -->
+                <div id="tab-settings" class="admin-tab-content space-y-5 hidden">
+                    <h3 class="text-sm font-bold text-white border-b border-white/10 pb-2">⚙️ Settings & Telegram Setup</h3>
+
+                    <div class="bg-gradient-to-r from-sky-900/20 to-blue-900/10 border border-sky-500/30 rounded-xl p-4 space-y-3">
+                        <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center">
+                            <i class="fa-brands fa-telegram text-sky-400 text-base mr-2"></i> Update Telegram Link
+                        </h4>
+                        <div class="flex flex-col sm:flex-row gap-2.5">
+                            <input type="url" id="adminTelegramLinkInput" placeholder="https://t.me/your_channel_link" class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400">
+                            <button onclick="updateTelegramLink()" class="px-5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs whitespace-nowrap transition-all shadow-md">
+                                Save Link
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-black/50 border border-white/10 rounded-xl space-y-2">
+                        <label class="text-xs text-gray-400 font-bold uppercase tracking-wider block">App Color Palette Theme</label>
+                        <select id="themeSelector" onchange="changeAppTheme(this.value)" class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500">
+                            <option value="theme-netflix">🔴 Netflix Red (Classic Dark)</option>
+                            <option value="theme-cyberpunk">⚡ Cyberpunk Neon</option>
+                            <option value="theme-gold">👑 Royal Gold</option>
+                        </select>
+                    </div>
+                </div>
+
+            </main>
         </div>
     </div>
 
@@ -507,6 +569,19 @@
         let searchQuery = '';
         let myChartInstance = null;
         let currentTelegramLink = 'https://t.me/';
+        let selectedMovieObj = null;
+
+        // Language Mode (Default: English)
+        let currentLang = 'EN'; 
+
+        // Secret Admin Toggle Switch Sequence Tracker (Toggle ON -> Toggle OFF unlocks Admin Passcode)
+        let toggleState = false;
+
+        // Timed Ad Watch Enforcement System Variables (15 Seconds Required Watch)
+        let adClickTimestamp = 0;
+        let isAdFullyWatched = false;
+        const REQUIRED_AD_WATCH_TIME_MS = 15000; // 15 Seconds
+
         const ADMIN_PASSCODE = '8815';
         const RESET_DOB = '01/01/2000';
         const AD_LINK = 'https://ourselvesincompetentlearned.com/n3ekr8j6?key=065cf53aa3bf38722db0e76ab9572979';
@@ -526,6 +601,39 @@
 
             setupSearchListeners();
         });
+
+        // Secret Admin Toggle Trigger (Matched Image Design)
+        function handleSecretToggleClick() {
+            const dot = document.getElementById('toggleDot');
+            
+            if(!toggleState) {
+                // Step 1: Turned ON
+                toggleState = true;
+                if(dot) dot.style.transform = 'translateX(14px)';
+            } else {
+                // Step 2: Turned OFF -> Unlocks Secret Admin Passcode Modal
+                toggleState = false;
+                if(dot) dot.style.transform = 'translateX(0px)';
+                openAdminModal();
+            }
+        }
+
+        // Toggle Language HI / EN
+        function toggleAppLanguage() {
+            if(currentLang === 'EN') {
+                currentLang = 'HI';
+                document.getElementById('currentLangText').innerText = 'HI';
+                document.getElementById('telegramTextDesc').innerText = 'मूवी नहीं मिल रही हो तो इस टेलीग्राम पर ओके करें 🚀';
+                document.getElementById('searchInputDesktop').placeholder = 'मूवी, शो या श्रेणी खोजें...';
+                document.getElementById('searchInputMobile').placeholder = 'मूवी, शो या श्रेणी खोजें...';
+            } else {
+                currentLang = 'EN';
+                document.getElementById('currentLangText').innerText = 'EN';
+                document.getElementById('telegramTextDesc').innerText = 'If movie is missing, click here to request on Telegram 🚀';
+                document.getElementById('searchInputDesktop').placeholder = 'Search Movies, Shows...';
+                document.getElementById('searchInputMobile').placeholder = 'Search Movies, Shows...';
+            }
+        }
 
         function registerPresenceAndAnalytics() {
             if (!db) return;
@@ -563,7 +671,9 @@
         }
 
         function renderVisitorLineChart(dailyData) {
-            const ctx = document.getElementById('visitorChart').getContext('2d');
+            const canvas = document.getElementById('visitorChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
             
             const labels = [];
             const dataPoints = [];
@@ -572,7 +682,7 @@
                 const d = new Date();
                 d.setDate(d.getDate() - i);
                 const dateStr = d.toISOString().split('T')[0];
-                const displayLabel = d.toLocaleDateString('hi-IN', { month: 'short', day: 'numeric' });
+                const displayLabel = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 
                 labels.push(displayLabel);
                 dataPoints.push(dailyData[dateStr] || 0);
@@ -587,43 +697,33 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'दैनिक विज़िटर्स (Daily Visitors)',
+                        label: 'Daily Visitors',
                         data: dataPoints,
                         borderColor: '#e50914',
-                        backgroundColor: 'rgba(229, 9, 20, 0.15)',
+                        backgroundColor: 'rgba(229, 9, 20, 0.2)',
                         fill: true,
                         tension: 0.4,
-                        borderWidth: 3,
+                        borderWidth: 2.5,
                         pointBackgroundColor: '#ffffff',
                         pointBorderColor: '#e50914',
-                        pointRadius: 5
+                        pointRadius: 4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            labels: { color: '#cccccc', font: { family: 'Poppins', size: 11 } }
-                        }
+                        legend: { labels: { color: '#cccccc', font: { family: 'Poppins', size: 10 } } }
                     },
                     scales: {
-                        x: {
-                            ticks: { color: '#888888', font: { size: 10 } },
-                            grid: { color: 'rgba(255,255,255,0.05)' }
-                        },
-                        y: {
-                            ticks: { color: '#888888', precision: 0, font: { size: 10 } },
-                            grid: { color: 'rgba(255,255,255,0.05)' },
-                            beginAtZero: true
-                        }
+                        x: { ticks: { color: '#888888', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y: { ticks: { color: '#888888', precision: 0, font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
                     }
                 }
             });
         }
 
         function setupRealtimeListeners() {
-            // Listen for Movies
             db.ref('movies').on('value', (snapshot) => {
                 const val = snapshot.val();
                 moviesData = [];
@@ -636,22 +736,22 @@
                 renderAdminList();
             });
 
-            // Listen for Theme
             db.ref('settings/theme').on('value', (snapshot) => {
                 const theme = snapshot.val();
                 if (theme) {
                     document.body.className = theme + ' min-h-screen flex flex-col';
-                    document.getElementById('themeSelector').value = theme;
+                    const themeSel = document.getElementById('themeSelector');
+                    if(themeSel) themeSel.value = theme;
                 }
             });
 
-            // Listen for Telegram Link Settings
             db.ref('settings/telegram_link').on('value', (snapshot) => {
                 const link = snapshot.val();
                 if (link) {
                     currentTelegramLink = link;
                     document.getElementById('telegramUserBannerLink').href = link;
-                    document.getElementById('adminTelegramLinkInput').value = link;
+                    const input = document.getElementById('adminTelegramLinkInput');
+                    if(input) input.value = link;
                 }
             });
         }
@@ -665,7 +765,7 @@
                     currentTelegramLink = newLink;
                     document.getElementById('telegramUserBannerLink').href = newLink;
                 }
-                alert("टेलीग्राम लिंक सफलतापूर्वक सेव हो गई है!");
+                alert("Telegram Link updated successfully!");
             }
         }
 
@@ -677,12 +777,12 @@
                 moviesData = [
                     {
                         id: 'm1',
-                        title: 'Pushpa: The Rise',
+                        title: 'Pushpa: The Rise (4K Ultra HD)',
                         category: 'Bollywood',
                         image: 'https://m.media-amazon.com/images/M/MV5BMDFkYTc0MGEtZmNhMC00ZDIzLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_.jpg',
-                        link1: AD_LINK,
-                        link2: AD_LINK,
-                        desc: 'पुष्पा राज की कहानी जो एक मजदूर से लाल चंदन तस्करों का सम्राट बनता है।'
+                        link1: 'https://example.com/stream/pushpa',
+                        link2: 'https://example.com/backup/pushpa',
+                        desc: 'Story of Pushpa Raj who rises from a daily wage worker to the king of red sandalwood smuggling.'
                     }
                 ];
                 saveToLocalStorage();
@@ -711,12 +811,10 @@
         function filterCategory(cat) {
             currentCategory = cat;
             document.querySelectorAll('.category-btn').forEach(btn => {
-                if (btn.innerText.includes(cat) || (cat === 'All' && btn.innerText.includes('सभी'))) {
-                    btn.classList.add('bg-white/20', 'text-white');
-                    btn.classList.remove('bg-white/5', 'text-gray-300');
+                if (btn.innerText.includes(cat) || (cat === 'All' && btn.innerText.includes('All'))) {
+                    btn.className = 'category-btn active px-4 py-1.5 rounded-lg text-xs font-bold bg-red-600 text-white whitespace-nowrap border border-red-500 shadow-md';
                 } else {
-                    btn.classList.remove('bg-white/20', 'text-white');
-                    btn.classList.add('bg-white/5', 'text-gray-300');
+                    btn.className = 'category-btn px-4 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/15 whitespace-nowrap border border-white/10 text-gray-300';
                 }
             });
             renderMovieCards();
@@ -742,28 +840,118 @@
 
                 filtered.forEach(movie => {
                     const card = document.createElement('div');
-                    card.className = 'movie-card bg-gray-900 border border-white/10 rounded-xl overflow-hidden cursor-pointer flex flex-col group';
+                    card.className = 'movie-card bg-gray-900/80 border border-white/10 rounded-xl overflow-hidden cursor-pointer flex flex-col group';
                     card.onclick = () => openMovieDetailModal(movie);
 
                     card.innerHTML = `
-                        <div class="relative aspect-[2/3] overflow-hidden bg-black/50">
+                        <div class="relative aspect-[2/3] overflow-hidden bg-black">
                             <img src="${movie.image}" alt="${movie.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
-                            <div class="absolute top-2 left-2">
-                                <span class="px-2 py-0.5 text-[9px] font-extrabold uppercase rounded bg-black/70 backdrop-blur-md text-red-400 border border-red-500/30">
+                            <div class="absolute top-1.5 left-1.5">
+                                <span class="px-1.5 py-0.5 text-[8px] font-extrabold uppercase rounded bg-black/80 backdrop-blur-md text-red-400 border border-red-500/30">
                                     ${movie.category}
                                 </span>
                             </div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                            <div class="absolute bottom-1.5 left-1.5 right-1.5 flex justify-between items-center text-[9px] text-gray-300">
+                                <span><i class="fa-solid fa-star text-amber-400 mr-0.5"></i>4.9</span>
+                                <span class="bg-red-600/80 px-1 py-0.5 rounded text-white text-[8px] font-bold">4K</span>
+                            </div>
                         </div>
-                        <div class="p-3 flex flex-col flex-grow justify-between">
-                            <h4 class="text-xs font-bold text-white line-clamp-2 leading-snug group-hover:text-red-400 transition-colors">${movie.title}</h4>
-                            <span class="text-[10px] text-gray-400 mt-2 block flex items-center">
-                                <i class="fa-solid fa-circle-play mr-1 theme-text"></i> अभी देखें
+                        <div class="p-2.5 flex flex-col flex-grow justify-between bg-gray-950">
+                            <h4 class="text-[11px] font-bold text-white line-clamp-2 leading-tight group-hover:text-red-400 transition-colors">${movie.title}</h4>
+                            <span class="text-[9px] text-gray-400 mt-1.5 block flex items-center font-semibold">
+                                <i class="fa-solid fa-play text-red-500 mr-1"></i> Watch Now
                             </span>
                         </div>
                     `;
                     grid.appendChild(card);
                 });
             }
+        }
+
+        // Open Movie Detail Modal
+        function openMovieDetailModal(movie) {
+            selectedMovieObj = movie;
+            adClickTimestamp = 0;
+            isAdFullyWatched = false;
+
+            document.getElementById('modalMoviePoster').src = movie.image;
+            document.getElementById('modalMovieTitle').innerText = movie.title;
+            document.getElementById('modalMovieCategory').innerText = movie.category;
+            document.getElementById('modalMovieDesc').innerText = movie.desc;
+
+            // Reset Player Status Text
+            document.getElementById('statusText').innerText = currentLang === 'EN' ? 'Click button below to watch full video' : 'वीडियो देखने के लिए नीचे दिए गए बटन पर क्लिक करें';
+            document.getElementById('statusIcon').className = 'fa-solid fa-shield-halved text-amber-400';
+            document.getElementById('playBtnText').innerText = currentLang === 'EN' ? '▶️ Watch Video / Play Now' : '▶️ वीडियो देखें / प्ले करें';
+            document.getElementById('backupServerBox').classList.add('hidden');
+
+            document.getElementById('movieDetailModal').classList.remove('hidden');
+        }
+
+        function closeMovieDetailModal() {
+            document.getElementById('movieDetailModal').classList.add('hidden');
+        }
+
+        // Timed Ad Watch Verification Logic (Requires 15 seconds)
+        function handleSmartVideoPlay() {
+            if (!selectedMovieObj) return;
+
+            const now = Date.now();
+
+            if (!isAdFullyWatched) {
+                if (adClickTimestamp === 0) {
+                    // First Click -> Open Sponsored Ad and Start 15s Timer
+                    adClickTimestamp = now;
+                    window.open(AD_LINK, '_blank');
+
+                    document.getElementById('statusText').innerText = currentLang === 'EN' ? 'Please watch advertisement for 15 seconds...' : 'कृपया 15 सेकंड विज्ञापन देखें... तभी वीडियो लिंक खुलेगा!';
+                    document.getElementById('statusIcon').className = 'fa-solid fa-clock text-yellow-400 animate-spin';
+                    document.getElementById('playBtnText').innerText = currentLang === 'EN' ? '⏳ Ad In Progress (Click here once watched)...' : '⏳ विज्ञापन देखा जा रहा है (यहाँ क्लिक करें)...';
+                } else {
+                    // User came back! Verify if 15 seconds passed
+                    const timeSpent = now - adClickTimestamp;
+
+                    if (timeSpent >= REQUIRED_AD_WATCH_TIME_MS) {
+                        // Success -> Video Unlocked
+                        isAdFullyWatched = true;
+                        document.getElementById('statusText').innerText = currentLang === 'EN' ? '🎉 Ad Verified! Video is now unlocked.' : '🎉 विज्ञापन सत्यापित हुआ! अब आपका वीडियो अनलॉक है।';
+                        document.getElementById('statusIcon').className = 'fa-solid fa-circle-check text-green-400';
+                        document.getElementById('playBtnText').innerText = currentLang === 'EN' ? '🎬 Start Video Stream (Watch Now)' : '🎬 वीडियो शुरू करें (Watch Now)';
+                        document.getElementById('backupServerBox').classList.remove('hidden');
+
+                        if (selectedMovieObj.link2) {
+                            document.getElementById('backupServerBtn').href = selectedMovieObj.link2;
+                        } else {
+                            document.getElementById('backupServerBtn').href = selectedMovieObj.link1;
+                        }
+                    } else {
+                        // Returned early -> Require remaining time
+                        const secondsLeft = Math.ceil((REQUIRED_AD_WATCH_TIME_MS - timeSpent) / 1000);
+                        alert(currentLang === 'EN' ? `⚠️ You haven't watched the full ad! Please wait ${secondsLeft} more seconds.` : `⚠️ आपने विज्ञापन पूरा नहीं देखा! कृपया ${secondsLeft} सेकंड और रुकें।`);
+                        window.open(AD_LINK, '_blank');
+                    }
+                }
+            } else {
+                // Fully Verified -> Open Real Video
+                window.open(selectedMovieObj.link1, '_blank');
+            }
+        }
+
+        // Desktop Admin Drawer Tabs
+        function switchAdminTab(tabId) {
+            document.querySelectorAll('.admin-tab-content').forEach(tab => tab.classList.add('hidden'));
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+                btn.className = 'admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5 text-gray-400 hover:text-white hover:bg-white/5';
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            event.currentTarget.className = 'admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5 text-red-400 bg-red-600/10 border border-red-500/20';
+        }
+
+        function toggleAdminSidebar() {
+            const drawer = document.getElementById('adminSidebarDrawer');
+            drawer.classList.toggle('hidden');
         }
 
         function renderAdminList() {
@@ -776,18 +964,18 @@
 
             moviesData.forEach(movie => {
                 const item = document.createElement('div');
-                item.className = 'flex items-center justify-between bg-black/40 border border-white/10 p-2.5 rounded-lg';
+                item.className = 'flex items-center justify-between bg-black/60 border border-white/10 p-2.5 rounded-xl';
                 item.innerHTML = `
-                    <div class="flex items-center space-x-3 overflow-hidden">
-                        <img src="${movie.image}" class="w-10 h-12 object-cover rounded">
+                    <div class="flex items-center space-x-2.5 overflow-hidden">
+                        <img src="${movie.image}" class="w-9 h-11 object-cover rounded-lg border border-white/10">
                         <div class="truncate">
                             <h5 class="text-xs font-bold text-white truncate">${movie.title}</h5>
                             <span class="text-[10px] text-gray-400">${movie.category}</span>
                         </div>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <button onclick="editMovie('${movie.id}')" class="p-1.5 text-blue-400 hover:bg-blue-400/20 rounded"><i class="fa-solid fa-pen-to-square text-xs"></i></button>
-                        <button onclick="deleteMovie('${movie.id}')" class="p-1.5 text-red-400 hover:bg-red-400/20 rounded"><i class="fa-solid fa-trash text-xs"></i></button>
+                    <div class="flex items-center space-x-1.5">
+                        <button onclick="editMovie('${movie.id}')" class="p-1.5 text-blue-400 hover:bg-blue-400/20 rounded-lg"><i class="fa-solid fa-pen-to-square text-xs"></i></button>
+                        <button onclick="deleteMovie('${movie.id}')" class="p-1.5 text-red-400 hover:bg-red-400/20 rounded-lg"><i class="fa-solid fa-trash text-xs"></i></button>
                     </div>
                 `;
                 list.appendChild(item);
@@ -845,13 +1033,14 @@
             document.getElementById('formLink1').value = '';
             document.getElementById('formLink2').value = '';
             document.getElementById('formDesc').value = '';
-            alert("सफलतापूर्वक सहेजा गया!");
+            alert("Movie saved and published successfully!");
         }
 
         function editMovie(id) {
             const movie = moviesData.find(m => m.id === id);
             if (!movie) return;
 
+            switchAdminTab('tab-add-movie');
             document.getElementById('editMovieId').value = movie.id;
             document.getElementById('formTitle').value = movie.title;
             document.getElementById('formCategory').value = movie.category;
@@ -862,7 +1051,7 @@
         }
 
         function deleteMovie(id) {
-            if (confirm("क्या आप निश्चित रूप से इसे हटाना चाहते हैं?")) {
+            if (confirm("Are you sure you want to delete this content?")) {
                 if (db) {
                     db.ref('movies/' + id).remove();
                 } else {
@@ -872,29 +1061,6 @@
                     renderAdminList();
                 }
             }
-        }
-
-        function openMovieDetailModal(movie) {
-            document.getElementById('modalMoviePoster').src = movie.image;
-            document.getElementById('modalMovieTitle').innerText = movie.title;
-            document.getElementById('modalMovieCategory').innerText = movie.category;
-            document.getElementById('modalMovieDesc').innerText = movie.desc;
-
-            const btn1 = document.getElementById('modalDlBtn1');
-            const btn2 = document.getElementById('modalDlBtn2');
-
-            btn1.href = movie.link1;
-            btn2.href = movie.link2 || movie.link1;
-
-            document.getElementById('movieDetailModal').classList.remove('hidden');
-        }
-
-        function closeMovieDetailModal() {
-            document.getElementById('movieDetailModal').classList.add('hidden');
-        }
-
-        function handleAdAndRedirect(e, el) {
-            window.open(AD_LINK, '_blank');
         }
 
         function changeAppTheme(themeClass) {
@@ -943,7 +1109,7 @@
             e.preventDefault();
             const dob = document.getElementById('adminDobInput').value.trim();
             if (dob === RESET_DOB) {
-                alert("सत्यापन सफल! पासकोड रीसेट हो गया है।");
+                alert("DOB Verified! Passcode unlocked.");
                 closeAdminAuthModal();
                 document.getElementById('adminPanelModal').classList.remove('hidden');
             } else {
