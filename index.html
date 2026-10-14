@@ -1,29 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CineStreamPRO - Premium Video Portal</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Chart.js Library for Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Firebase SDK (v8) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        html, body {
-            overflow-x: hidden;
-            width: 100%;
-        }
-
+        html, body { overflow-x: hidden; width: 100%; }
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #08090c;
@@ -31,79 +20,44 @@
             transition: background-color 0.4s ease, color 0.4s ease;
             user-select: none;
         }
+        input, textarea { user-select: text; }
+        .brand-font { font-family: 'Montserrat', sans-serif; }
 
-        .brand-font {
-            font-family: 'Montserrat', sans-serif;
-        }
+        .theme-netflix { --primary: #e50914; --primary-hover: #b80710; --bg-dark: #08090c; --card-bg: #12161f; --accent: #e50914; }
+        .theme-cyberpunk { --primary: #00f0ff; --primary-hover: #00b8c4; --bg-dark: #050515; --card-bg: #0d0f2b; --accent: #ff007f; }
+        .theme-gold { --primary: #d4af37; --primary-hover: #aa8c2c; --bg-dark: #121212; --card-bg: #1e1e1e; --accent: #ffd700; }
 
-        /* Dynamic Theme Palette Definitions */
-        .theme-netflix {
-            --primary: #e50914;
-            --primary-hover: #b80710;
-            --bg-dark: #08090c;
-            --card-bg: #12161f;
-            --accent: #e50914;
-        }
-        .theme-cyberpunk {
-            --primary: #00f0ff;
-            --primary-hover: #00b8c4;
-            --bg-dark: #050515;
-            --card-bg: #0d0f2b;
-            --accent: #ff007f;
-        }
-        .theme-gold {
-            --primary: #d4af37;
-            --primary-hover: #aa8c2c;
-            --bg-dark: #121212;
-            --card-bg: #1e1e1e;
-            --accent: #ffd700;
-        }
-
-        /* Compact Mobile-Friendly Neon Toggle Button */
         .neon-toggle-btn {
             background: linear-gradient(135deg, #1b0a2a, #0b071e);
             border: 1.5px solid #9333ea;
             box-shadow: 0 0 10px rgba(147, 51, 234, 0.4);
             transition: all 0.3s ease;
         }
-        .neon-toggle-btn:hover {
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
-            border-color: #c084fc;
-        }
+        .neon-toggle-btn:hover { box-shadow: 0 0 15px rgba(168, 85, 247, 0.6); border-color: #c084fc; }
 
-        /* Movie Card Hover Animation */
-        .movie-card {
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-        .movie-card:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-        }
+        .movie-card { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .movie-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.6); }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #08090c;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1f2833;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
-        }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #08090c; }
+        ::-webkit-scrollbar-thumb { background: #1f2833; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .scrollbar-none { scrollbar-width: none; }
+
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* हिंदी निर्देश बॉक्स: पूरी सफ़ेद पंक्तियाँ */
+        .howto-box { background: #0b0f1a; border: 1px solid rgba(255,255,255,0.35); }
+        .howto-box li, .howto-box p, .howto-box h4 { color: #ffffff; }
+        .howto-box li { font-size: 13px; line-height: 1.7; font-weight: 600; }
     </style>
 </head>
 <body class="theme-netflix min-h-screen flex flex-col selection:bg-red-600 selection:text-white">
 
-    <!-- Mobile-Optimized Navbar Section -->
+    <!-- Navbar -->
     <header class="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-white/10 px-3 sm:px-6 py-2.5 flex items-center justify-between shadow-2xl">
-        
-        <!-- Professional Logo -->
-        <div class="flex items-center space-x-2.5 cursor-pointer flex-shrink-0" onclick="event.preventDefault(); filterCategory('All');">
+        <div class="flex items-center space-x-2.5 cursor-pointer flex-shrink-0" id="logoHome">
             <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-red-600 via-red-500 to-amber-500 flex items-center justify-center text-white text-base shadow-lg shadow-red-900/40 border border-white/20">
                 <i class="fa-solid fa-play"></i>
             </div>
@@ -116,21 +70,18 @@
         </div>
 
         <div class="flex items-center space-x-2 sm:space-x-3">
-            <!-- Search Input in Header (Desktop Only) -->
             <div class="relative hidden md:block w-64">
-                <input type="text" id="searchInputDesktop" placeholder="Search Movies..." 
+                <input type="text" id="searchInputDesktop" placeholder="Search Movies..."
                     class="w-full bg-white/5 text-xs rounded-full pl-9 pr-3 py-1.5 border border-white/10 focus:outline-none focus:border-red-500 text-white placeholder-gray-400">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-2 text-gray-400 text-xs"></i>
             </div>
 
-            <!-- Language Switcher (Always Defaults to EN) -->
-            <button onclick="toggleAppLanguage()" id="langToggleBtn" class="px-2 py-1 rounded-lg bg-white/10 border border-white/15 text-[11px] font-bold text-white flex items-center space-x-1 hover:bg-white/20 transition-all">
+            <button id="langToggleBtn" class="px-2 py-1 rounded-lg bg-white/10 border border-white/15 text-[11px] font-bold text-white flex items-center space-x-1 hover:bg-white/20 transition-all">
                 <i class="fa-solid fa-globe text-sky-400"></i>
                 <span id="currentLangText">EN</span>
             </button>
 
-            <!-- Perfectly Adjusted Compact Neon Toggle Button (Secret Admin Access) -->
-            <div onclick="handleSecretToggleClick()" class="neon-toggle-btn px-2.5 py-1 rounded-full flex items-center space-x-2 cursor-pointer flex-shrink-0">
+            <div id="secretToggle" class="neon-toggle-btn px-2.5 py-1 rounded-full flex items-center space-x-2 cursor-pointer flex-shrink-0">
                 <i class="fa-solid fa-moon text-sky-400 text-xs drop-shadow-[0_0_5px_rgba(56,189,248,0.8)]"></i>
                 <span class="text-[10px] font-bold text-white tracking-wide hidden sm:inline">Dark</span>
                 <div class="w-3.5 h-3.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 shadow-[0_0_8px_#38bdf8] transition-transform duration-300 transform" id="toggleDot"></div>
@@ -138,30 +89,22 @@
         </div>
     </header>
 
-    <!-- Top Banner Ad Box Container -->
+    <!-- Top Banner Ad -->
     <div class="w-full bg-black/60 py-2 border-b border-white/10 flex flex-col items-center justify-center min-h-[75px]">
         <div class="text-[9px] text-gray-400 uppercase tracking-widest mb-1 font-semibold flex items-center">
             <i class="fa-solid fa-rectangle-ad text-yellow-500 mr-1"></i> SPONSORED ADVERTISEMENT
         </div>
-        
-        <!-- Fixed 468x60 Banner Box -->
         <div class="w-[468px] max-w-full h-[60px] bg-black/80 border border-white/10 rounded-lg overflow-hidden flex items-center justify-center shadow-inner">
             <script>
-              atOptions = {
-                'key' : '948025ec81d2e6ebbd59049304441e15',
-                'format' : 'iframe',
-                'height' : 60,
-                'width' : 468,
-                'params' : {}
-              };
+              atOptions = { 'key' : '948025ec81d2e6ebbd59049304441e15', 'format' : 'iframe', 'height' : 60, 'width' : 468, 'params' : {} };
             </script>
             <script src="https://ourselvesincompetentlearned.com/948025ec81d2e6ebbd59049304441e15/invoke.js"></script>
         </div>
     </div>
 
-    <!-- Professional Telegram Banner Box -->
+    <!-- Telegram Banner -->
     <div id="telegramBannerContainer" class="container mx-auto px-3 sm:px-4 pt-3">
-        <a id="telegramUserBannerLink" href="https://t.me/" target="_blank" onclick="event.stopPropagation();" class="block w-full bg-gradient-to-r from-sky-600/90 via-blue-600/90 to-sky-700/90 hover:from-sky-500 hover:to-blue-600 text-white border border-sky-400/40 rounded-xl p-3 shadow-lg transition-all transform hover:-translate-y-0.5">
+        <a id="telegramUserBannerLink" href="https://t.me/" target="_blank" rel="noopener" class="block w-full bg-gradient-to-r from-sky-600/90 via-blue-600/90 to-sky-700/90 hover:from-sky-500 hover:to-blue-600 text-white border border-sky-400/40 rounded-xl p-3 shadow-lg transition-all transform hover:-translate-y-0.5">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-xl sm:text-2xl shadow-inner flex-shrink-0">
@@ -180,116 +123,98 @@
         </a>
     </div>
 
-    <!-- Main Content Area -->
+    <!-- Main -->
     <main class="flex-grow container mx-auto px-3 sm:px-4 py-4">
 
-        <!-- Mobile Search Bar -->
         <div class="block md:hidden mb-4">
             <div class="relative w-full">
-                <input type="text" id="searchInputMobile" placeholder="Search Movies, Shows..." 
+                <input type="text" id="searchInputMobile" placeholder="Search Movies, Shows..."
                     class="w-full bg-white/5 text-xs rounded-xl pl-9 pr-3 py-2.5 border border-white/10 focus:outline-none focus:border-red-500 text-white placeholder-gray-400">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
             </div>
         </div>
 
-        <!-- Category Filters -->
-        <div class="flex items-center space-x-2 overflow-x-auto pb-3 scrollbar-none mb-4">
-            <button onclick="filterCategory('All')" class="category-btn active px-4 py-1.5 rounded-lg text-xs font-bold bg-red-600 text-white whitespace-nowrap border border-red-500 shadow-md">All Content</button>
-            <button onclick="filterCategory('Bollywood')" class="category-btn px-4 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/15 whitespace-nowrap border border-white/10 text-gray-300">Bollywood</button>
-            <button onclick="filterCategory('Hollywood')" class="category-btn px-4 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/15 whitespace-nowrap border border-white/10 text-gray-300">Hollywood</button>
-            <button onclick="filterCategory('South Hindi')" class="category-btn px-4 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/15 whitespace-nowrap border border-white/10 text-gray-300">South Dubbed</button>
-            <button onclick="filterCategory('Web Series')" class="category-btn px-4 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/15 whitespace-nowrap border border-white/10 text-gray-300">Web Series</button>
+        <div class="flex items-center space-x-2 overflow-x-auto pb-3 scrollbar-none mb-4" id="categoryBar">
+            <button data-cat="All" class="category-btn px-4 py-1.5 rounded-lg text-xs whitespace-nowrap border">All Content</button>
+            <button data-cat="Bollywood" class="category-btn px-4 py-1.5 rounded-lg text-xs whitespace-nowrap border">Bollywood</button>
+            <button data-cat="Hollywood" class="category-btn px-4 py-1.5 rounded-lg text-xs whitespace-nowrap border">Hollywood</button>
+            <button data-cat="South Hindi" class="category-btn px-4 py-1.5 rounded-lg text-xs whitespace-nowrap border">South Dubbed</button>
+            <button data-cat="Web Series" class="category-btn px-4 py-1.5 rounded-lg text-xs whitespace-nowrap border">Web Series</button>
         </div>
 
-        <!-- Movie Cards Grid -->
-        <div id="movieGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
-            <!-- Dynamic Movie Cards Rendered Here -->
-        </div>
+        <div id="movieGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4"></div>
 
-        <!-- Empty State -->
         <div id="emptyState" class="hidden flex-col items-center justify-center py-16 text-center">
-            <i class="fa-solid fa-film-slash text-4xl text-gray-600 mb-3"></i>
+            <i class="fa-solid fa-film text-4xl text-gray-600 mb-3"></i>
             <h3 class="text-lg font-bold text-gray-400" id="emptyTitle">No Content Found!</h3>
             <p class="text-xs text-gray-500 mt-1" id="emptySub">Please try searching another title or category.</p>
         </div>
     </main>
 
-    <!-- Professional Video Player / Download Modal -->
+    <!-- Movie Detail / Player Modal -->
     <div id="movieDetailModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-3">
         <div class="bg-gray-950 border border-white/10 rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl relative max-h-[92vh] flex flex-col">
-            
-            <button onclick="closeMovieDetailModal()" class="absolute top-2.5 right-2.5 z-20 w-7 h-7 rounded-full bg-black/80 text-white hover:bg-red-600 flex items-center justify-center transition-all border border-white/20 text-xs">
+
+            <button id="closeMovieBtn" class="absolute top-2.5 right-2.5 z-20 w-7 h-7 rounded-full bg-black/80 text-white hover:bg-red-600 flex items-center justify-center transition-all border border-white/20 text-xs">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            
+
             <div class="overflow-y-auto p-4 space-y-3">
-                
-                <!-- Fixed Poster Section (Maintains 2:3 Aspect Ratio) -->
+
                 <div class="w-full flex flex-col items-center">
                     <div class="w-40 sm:w-48 aspect-[2/3] relative overflow-hidden rounded-xl border border-white/15 shadow-2xl bg-black">
                         <img id="modalMoviePoster" src="" alt="Poster" class="w-full h-full object-cover">
                     </div>
 
-                    <!-- Bottom Banner Ad Right Below Movie Poster Photo -->
                     <div class="w-full mt-2.5 bg-black/60 border border-white/10 rounded-lg p-1 flex flex-col items-center justify-center">
                         <span class="text-[8px] text-gray-500 uppercase tracking-widest mb-0.5">Sponsored Ad</span>
                         <div class="w-full overflow-hidden flex justify-center items-center max-h-[60px]">
                             <script>
-                              atOptions = {
-                                'key' : '948025ec81d2e6ebbd59049304441e15',
-                                'format' : 'iframe',
-                                'height' : 60,
-                                'width' : 468,
-                                'params' : {}
-                              };
+                              atOptions = { 'key' : '948025ec81d2e6ebbd59049304441e15', 'format' : 'iframe', 'height' : 60, 'width' : 468, 'params' : {} };
                             </script>
                             <script src="https://ourselvesincompetentlearned.com/948025ec81d2e6ebbd59049304441e15/invoke.js"></script>
                         </div>
                     </div>
                 </div>
 
-                <!-- Info Section -->
                 <div class="text-center space-y-1">
                     <span id="modalMovieCategory" class="inline-block px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-md bg-red-600/20 text-red-400 border border-red-500/30">Category</span>
                     <h2 id="modalMovieTitle" class="text-lg font-bold text-white leading-snug">Movie Title</h2>
-                    <p id="modalMovieDesc" class="text-[11px] text-gray-300 leading-relaxed px-1">Description goes here...</p>
+                    <p id="modalMovieDesc" class="text-[11px] text-gray-300 leading-relaxed px-1">Description</p>
                 </div>
 
-                <!-- Redesigned Video Player Box with Timed Ad Reward Logic -->
+                <!-- वीडियो कैसे चलेगा: शुद्ध हिंदी निर्देश (पूरी सफ़ेद पंक्तियाँ) -->
+                <div class="howto-box rounded-xl p-3 space-y-2">
+                    <h4 class="text-sm font-extrabold text-center border-b border-white/30 pb-1.5">📖 वीडियो कैसे चलेगा? पढ़ लीजिए</h4>
+                    <ol class="list-decimal pl-5 space-y-1">
+                        <li>नीचे दिए गए <b>"वीडियो देखें"</b> बटन को एक बार दबाइए।</li>
+                        <li>एक विज्ञापन का पृष्ठ नए टैब में खुलेगा। उस पृष्ठ पर पूरे <b>15 सेकंड</b> रुकिए।</li>
+                        <li>15 सेकंड पूरे होने पर इस पृष्ठ पर वापस आइए। बटन अपने आप <b>"अब वीडियो खोलें"</b> बन जाएगा।</li>
+                        <li>"अब वीडियो खोलें" बटन दबाइए, आपका वीडियो खुल जाएगा।</li>
+                        <li>यदि एक सर्वर पर वीडियो न चले, तो दूसरा सर्वर चुनिए। हर सर्वर खोलने से पहले एक बार विज्ञापन देखना होगा।</li>
+                    </ol>
+                    <p class="text-[12px] font-semibold border-t border-white/30 pt-1.5">⚠️ यदि विज्ञापन का पृष्ठ न खुले, तो अपने ब्राउज़र में "पॉप-अप" की अनुमति दे दीजिए।</p>
+                </div>
+
                 <div class="bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-xl p-3 text-center space-y-2.5 shadow-inner">
-                    
-                    <div id="playerStatusNotice" class="text-[11px] font-semibold text-amber-400 flex items-center justify-center space-x-1">
-                        <i id="statusIcon" class="fa-solid fa-shield-halved"></i>
-                        <span id="statusText">Click button below to watch full video</span>
+                    <div id="playerStatusNotice" class="text-[12px] font-semibold text-white flex items-center justify-center space-x-1.5">
+                        <i id="statusIcon" class="fa-solid fa-shield-halved text-amber-400"></i>
+                        <span id="statusText">वीडियो देखने के लिए नीचे दिए गए बटन को दबाइए</span>
                     </div>
-
-                    <!-- Main Watch / Play Video Button -->
-                    <button id="mainPlayVideoBtn" onclick="handleSmartVideoPlay()" class="w-full py-3 px-3 bg-gradient-to-r from-red-600 via-red-500 to-amber-600 hover:from-red-700 hover:to-amber-700 text-white font-extrabold rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-xl transition-all">
-                        <i id="playBtnIcon" class="fa-solid fa-circle-play text-lg"></i>
-                        <span id="playBtnText">▶️ Watch Video / Play Now</span>
-                    </button>
-
-                    <!-- Backup Server Button -->
-                    <div id="backupServerBox" class="hidden pt-2 border-t border-white/10 flex flex-col space-y-1.5">
-                        <span class="text-[9px] text-gray-400 uppercase font-semibold">Backup Streaming Server (Server 2)</span>
-                        <a id="backupServerBtn" href="#" target="_blank" class="w-full py-2 bg-white/10 hover:bg-white/20 text-white border border-white/10 rounded-lg font-bold text-[11px] flex items-center justify-center space-x-1.5">
-                            <i class="fa-solid fa-server text-blue-400"></i>
-                            <span>Watch Server 2 (1080p Fast Cloud)</span>
-                        </a>
-                    </div>
+                    <div id="linksList" class="space-y-2"></div>
                 </div>
 
             </div>
         </div>
     </div>
 
-    <!-- Admin Authentication Modal (Passcode Protected) -->
+    <!-- Admin Auth Modal -->
     <div id="adminAuthModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-gray-950 border border-white/10 rounded-2xl max-w-sm w-full p-5 relative shadow-2xl">
-            <button onclick="closeAdminAuthModal()" class="absolute top-3 right-3 text-gray-400 hover:text-white">
+            <button id="closeAuthBtn" class="absolute top-3 right-3 text-gray-400 hover:text-white">
                 <i class="fa-solid fa-xmark text-base"></i>
             </button>
-            
+
             <div id="authFormState">
                 <div class="text-center mb-5">
                     <div class="w-10 h-10 rounded-full bg-red-600/20 border border-red-500/40 text-red-500 flex items-center justify-center mx-auto mb-2.5">
@@ -299,25 +224,20 @@
                     <p class="text-[11px] text-gray-400 mt-0.5">Enter security passcode to unlock admin panel</p>
                 </div>
 
-                <form onsubmit="verifyAdminPasscode(event)" class="space-y-3.5">
+                <form id="passForm" class="space-y-3.5">
                     <div>
                         <label class="block text-[11px] text-gray-400 mb-1">Security Passcode</label>
                         <input type="password" id="adminPassInput" required class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-red-500 text-center tracking-widest text-base">
                     </div>
-
                     <p id="authErrorMsg" class="text-[11px] text-red-500 text-center hidden">Incorrect Passcode! Try again.</p>
-
-                    <button type="submit" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs transition-all shadow-lg">
-                        Unlock Admin Dashboard
-                    </button>
+                    <button type="submit" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs transition-all shadow-lg">Unlock Admin Dashboard</button>
                 </form>
 
                 <div class="text-center mt-3">
-                    <button onclick="switchToForgotPassState()" class="text-[11px] text-gray-400 hover:text-red-400 underline">🔑 Forgot Passcode?</button>
+                    <button id="forgotBtn" class="text-[11px] text-gray-400 hover:text-red-400 underline">🔑 Forgot Passcode?</button>
                 </div>
             </div>
 
-            <!-- Forgot Password State -->
             <div id="forgotFormState" class="hidden">
                 <div class="text-center mb-5">
                     <div class="w-10 h-10 rounded-full bg-amber-600/20 border border-amber-500/40 text-amber-500 flex items-center justify-center mx-auto mb-2.5">
@@ -327,127 +247,81 @@
                     <p class="text-[11px] text-gray-400 mt-0.5">Enter Date of Birth for verification</p>
                 </div>
 
-                <form onsubmit="verifyAdminDOB(event)" class="space-y-3.5">
+                <form id="dobForm" class="space-y-3.5">
                     <div>
                         <label class="block text-[11px] text-gray-400 mb-1">Date of Birth (DD/MM/YYYY)</label>
                         <input type="password" id="adminDobInput" required class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500 text-center tracking-widest text-sm">
                     </div>
-
                     <p id="dobErrorMsg" class="text-[11px] text-red-500 text-center hidden">Incorrect Date of Birth!</p>
-
-                    <button type="submit" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs transition-all shadow-lg">
-                        Verify Recovery DOB
-                    </button>
+                    <button type="submit" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs transition-all shadow-lg">Verify Recovery DOB</button>
                 </form>
 
                 <div class="text-center mt-3">
-                    <button onclick="switchToAuthPassState()" class="text-[11px] text-gray-400 hover:text-white underline">Back to Login</button>
+                    <button id="backToLoginBtn" class="text-[11px] text-gray-400 hover:text-white underline">Back to Login</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Admin Dashboard Modal -->
+    <!-- Admin Panel -->
     <div id="adminPanelModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-2 sm:p-5">
         <div class="bg-gray-950 border border-white/10 rounded-2xl w-full max-w-5xl h-[92vh] flex flex-col md:flex-row overflow-hidden shadow-2xl relative">
-            
+
             <div class="md:hidden p-3 bg-black/80 border-b border-white/10 flex items-center justify-between">
-                <button onclick="toggleAdminSidebar()" class="p-1.5 text-white bg-white/10 rounded-lg text-sm">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
+                <button id="sidebarToggleBtn" class="p-1.5 text-white bg-white/10 rounded-lg text-sm"><i class="fa-solid fa-bars"></i></button>
                 <span class="text-xs font-bold text-white">CineStreamPRO Admin</span>
-                <button onclick="closeAdminPanelModal()" class="text-gray-400 hover:text-white">
-                    <i class="fa-solid fa-xmark text-base"></i>
-                </button>
+                <button class="closeAdminBtn text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
 
-            <!-- Desktop Drawer Sidebar -->
             <aside id="adminSidebarDrawer" class="w-full md:w-56 bg-black/90 border-r border-white/10 flex flex-col justify-between hidden md:flex transition-all">
                 <div class="p-4 space-y-5">
                     <div class="hidden md:flex items-center space-x-2">
                         <i class="fa-solid fa-video text-red-500 text-lg"></i>
                         <span class="font-extrabold text-base tracking-wider text-white">CineStreamPRO</span>
                     </div>
-
                     <nav class="space-y-1">
-                        <button onclick="switchAdminTab('tab-analytics')" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5 text-red-400 bg-red-600/10 border border-red-500/20">
-                            <i class="fa-solid fa-chart-line text-xs"></i>
-                            <span>Analytics</span>
-                        </button>
-                        <button onclick="switchAdminTab('tab-add-movie')" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5 text-gray-400 hover:text-white hover:bg-white/5">
-                            <i class="fa-solid fa-plus-circle text-xs"></i>
-                            <span>Add Content</span>
-                        </button>
-                        <button onclick="switchAdminTab('tab-manage-movies')" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5 text-gray-400 hover:text-white hover:bg-white/5">
-                            <i class="fa-solid fa-list text-xs"></i>
-                            <span>Manage Content</span>
-                        </button>
-                        <button onclick="switchAdminTab('tab-settings')" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5 text-gray-400 hover:text-white hover:bg-white/5">
-                            <i class="fa-solid fa-sliders text-xs"></i>
-                            <span>Settings</span>
-                        </button>
+                        <button data-tab="tab-analytics" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5"><i class="fa-solid fa-chart-line text-xs"></i><span>Analytics</span></button>
+                        <button data-tab="tab-add-movie" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5"><i class="fa-solid fa-plus-circle text-xs"></i><span>Add Content</span></button>
+                        <button data-tab="tab-manage-movies" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5"><i class="fa-solid fa-list text-xs"></i><span>Manage Content</span></button>
+                        <button data-tab="tab-settings" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5"><i class="fa-solid fa-sliders text-xs"></i><span>Settings</span></button>
                     </nav>
                 </div>
-
                 <div class="p-3 border-t border-white/10 hidden md:block">
-                    <button onclick="closeAdminPanelModal()" class="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold transition-all">
-                        Exit Admin
-                    </button>
+                    <button class="closeAdminBtn w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold transition-all">Exit Admin</button>
                 </div>
             </aside>
 
-            <!-- Main Desktop Admin Workspace Panel -->
             <main class="flex-grow overflow-y-auto p-4 space-y-5">
-                
-                <button onclick="closeAdminPanelModal()" class="hidden md:flex absolute top-3 right-3 w-8 h-8 rounded-full bg-white/10 text-white hover:bg-red-600 items-center justify-center transition-all z-10 text-xs">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <button class="closeAdminBtn hidden md:flex absolute top-3 right-3 w-8 h-8 rounded-full bg-white/10 text-white hover:bg-red-600 items-center justify-center transition-all z-10 text-xs"><i class="fa-solid fa-xmark"></i></button>
 
-                <!-- SECTION 1: Analytics Dashboard -->
+                <!-- Analytics -->
                 <div id="tab-analytics" class="admin-tab-content space-y-5">
                     <h3 class="text-sm font-bold text-white border-b border-white/10 pb-2">📊 Realtime Visitor Analytics</h3>
-                    
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div class="p-3 bg-gradient-to-br from-green-900/30 to-emerald-900/10 border border-green-500/30 rounded-xl flex items-center justify-between">
-                            <div>
-                                <span class="text-[10px] text-green-400 font-bold uppercase tracking-wider block">🟢 Live Active</span>
-                                <span id="activeUserCount" class="text-2xl font-black text-white mt-0.5 block">1</span>
-                            </div>
+                            <div><span class="text-[10px] text-green-400 font-bold uppercase tracking-wider block">🟢 Live Active</span><span id="activeUserCount" class="text-2xl font-black text-white mt-0.5 block">1</span></div>
                             <i class="fa-solid fa-users text-2xl text-green-500/40"></i>
                         </div>
-
                         <div class="p-3 bg-gradient-to-br from-blue-900/30 to-indigo-900/10 border border-blue-500/30 rounded-xl flex items-center justify-between">
-                            <div>
-                                <span class="text-[10px] text-blue-400 font-bold uppercase tracking-wider block">Today's Visitors</span>
-                                <span id="todayVisitorCount" class="text-2xl font-black text-white mt-0.5 block">0</span>
-                            </div>
+                            <div><span class="text-[10px] text-blue-400 font-bold uppercase tracking-wider block">Today's Visitors</span><span id="todayVisitorCount" class="text-2xl font-black text-white mt-0.5 block">0</span></div>
                             <i class="fa-solid fa-chart-line text-2xl text-blue-500/40"></i>
                         </div>
-
                         <div class="p-3 bg-gradient-to-br from-purple-900/30 to-fuchsia-900/10 border border-purple-500/30 rounded-xl flex items-center justify-between">
-                            <div>
-                                <span class="text-[10px] text-purple-400 font-bold uppercase tracking-wider block">Total Visitors</span>
-                                <span id="totalVisitorCount" class="text-2xl font-black text-white mt-0.5 block">0</span>
-                            </div>
+                            <div><span class="text-[10px] text-purple-400 font-bold uppercase tracking-wider block">Total Visitors</span><span id="totalVisitorCount" class="text-2xl font-black text-white mt-0.5 block">0</span></div>
                             <i class="fa-solid fa-eye text-2xl text-purple-500/40"></i>
                         </div>
                     </div>
-
                     <div class="bg-black/50 border border-white/10 rounded-xl p-4 space-y-2">
-                        <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center border-b border-white/10 pb-2">
-                            <i class="fa-solid fa-chart-area text-red-500 mr-2"></i> Daily Visitor Traffic Trend
-                        </h4>
-                        <div class="relative w-full h-56">
-                            <canvas id="visitorChart"></canvas>
-                        </div>
+                        <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center border-b border-white/10 pb-2"><i class="fa-solid fa-chart-area text-red-500 mr-2"></i> Daily Visitor Traffic Trend</h4>
+                        <div class="relative w-full h-56"><canvas id="visitorChart"></canvas></div>
                     </div>
                 </div>
 
-                <!-- SECTION 2: Add Movie/Video -->
+                <!-- Add / Edit Movie -->
                 <div id="tab-add-movie" class="admin-tab-content space-y-3.5 hidden">
-                    <h3 class="text-sm font-bold text-white border-b border-white/10 pb-2">🎬 Add New Movie / Video Link</h3>
+                    <h3 id="formHeading" class="text-sm font-bold text-white border-b border-white/10 pb-2">🎬 Add New Movie / Video Link</h3>
 
-                    <form onsubmit="handleMovieSubmit(event)" class="space-y-3.5">
+                    <form id="movieForm" class="space-y-3.5">
                         <input type="hidden" id="editMovieId" value="">
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -455,7 +329,6 @@
                                 <label class="block text-[11px] text-gray-400 mb-1">Movie / Video Title *</label>
                                 <input type="text" id="formTitle" required placeholder="e.g. Jawan (2023) Ultra HD" class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500">
                             </div>
-
                             <div>
                                 <label class="block text-[11px] text-gray-400 mb-1">Category *</label>
                                 <select id="formCategory" required class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500">
@@ -467,17 +340,14 @@
                             </div>
                         </div>
 
-                        <!-- Poster Image Options -->
                         <div class="space-y-1.5">
                             <label class="block text-[11px] text-gray-400">Upload Poster / Photo *</label>
-                            
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                                 <div class="relative border border-dashed border-white/20 rounded-xl p-2.5 text-center bg-black/30 hover:bg-black/50 cursor-pointer">
-                                    <input type="file" id="formFileImage" accept="image/*" onchange="handleFileSelect(event)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+                                    <input type="file" id="formFileImage" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
                                     <i class="fa-solid fa-cloud-arrow-up text-lg text-gray-400 mb-0.5"></i>
-                                    <span class="block text-[11px] text-gray-300">Choose File From Device</span>
+                                    <span id="fileChosenText" class="block text-[11px] text-gray-300">Choose File From Device</span>
                                 </div>
-
                                 <div>
                                     <input type="url" id="formUrlImage" placeholder="Or Paste Online Image URL" class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500 h-full">
                                 </div>
@@ -485,72 +355,60 @@
                             <input type="hidden" id="finalImageHolder" value="">
                         </div>
 
-                        <!-- Streaming Video / Download Links -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-[11px] text-gray-400 mb-1">Main Video Link (Server 1) *</label>
-                                <input type="url" id="formLink1" required placeholder="https://..." class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500">
+                        <!-- कई वीडियो लिंक (अधिकतम 15) -->
+                        <div class="space-y-2 bg-black/30 border border-white/10 rounded-xl p-3">
+                            <div class="flex items-center justify-between">
+                                <label class="block text-[11px] text-gray-300 font-bold">Video Links (अधिकतम 15) *</label>
+                                <span id="linkCounter" class="text-[11px] text-amber-400 font-bold">1/15</span>
                             </div>
-
-                            <div>
-                                <label class="block text-[11px] text-gray-400 mb-1">Backup Video Link (Server 2)</label>
-                                <input type="url" id="formLink2" placeholder="https://..." class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500">
-                            </div>
+                            <p class="text-[10px] text-gray-400">हर लिंक खोलने से पहले यूज़र को विज्ञापन दिखेगा। ज़रूरत न हो तो ✕ दबाकर लिंक हटा दीजिए।</p>
+                            <div id="linkRows" class="space-y-2"></div>
+                            <button type="button" id="addLinkBtn" class="w-full py-2 bg-white/10 hover:bg-white/20 border border-dashed border-white/30 text-white rounded-xl text-[11px] font-bold">
+                                <i class="fa-solid fa-plus mr-1"></i> और लिंक जोड़ें
+                            </button>
                         </div>
 
                         <div>
                             <label class="block text-[11px] text-gray-400 mb-1">Movie Story Description *</label>
-                            <textarea id="formDesc" rows="2.5" required placeholder="Write brief plot description..." class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500"></textarea>
+                            <textarea id="formDesc" rows="3" required placeholder="Write brief plot description..." class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500"></textarea>
                         </div>
 
-                        <button type="submit" id="submitMovieBtn" class="w-full py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-extrabold rounded-xl text-xs transition-all shadow-lg">
-                            Publish Content Now
-                        </button>
+                        <div class="flex gap-2">
+                            <button type="submit" id="submitMovieBtn" class="flex-1 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-extrabold rounded-xl text-xs transition-all shadow-lg">Publish Content Now</button>
+                            <button type="button" id="cancelEditBtn" class="hidden px-4 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs">रद्द करें</button>
+                        </div>
                     </form>
                 </div>
 
-                <!-- SECTION 3: Content List Management -->
+                <!-- Manage -->
                 <div id="tab-manage-movies" class="admin-tab-content space-y-3.5 hidden">
-                    <h3 class="text-sm font-bold text-white border-b border-white/10 pb-2">
-                        Manage Existing Content (<span id="totalMoviesCount">0</span>)
-                    </h3>
-
-                    <div id="adminMovieList" class="space-y-2.5 max-h-[55vh] overflow-y-auto pr-1">
-                        <!-- Admin Manage Cards Rendered Here -->
-                    </div>
+                    <h3 class="text-sm font-bold text-white border-b border-white/10 pb-2">Manage Existing Content (<span id="totalMoviesCount">0</span>)</h3>
+                    <div id="adminMovieList" class="space-y-2.5 max-h-[55vh] overflow-y-auto pr-1"></div>
                 </div>
 
-                <!-- SECTION 4: App Settings & Telegram Switch -->
+                <!-- Settings -->
                 <div id="tab-settings" class="admin-tab-content space-y-5 hidden">
                     <h3 class="text-sm font-bold text-white border-b border-white/10 pb-2">⚙️ Settings & Telegram Setup</h3>
-
                     <div class="bg-gradient-to-r from-sky-900/20 to-blue-900/10 border border-sky-500/30 rounded-xl p-4 space-y-3">
-                        <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center">
-                            <i class="fa-brands fa-telegram text-sky-400 text-base mr-2"></i> Update Telegram Link
-                        </h4>
+                        <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center"><i class="fa-brands fa-telegram text-sky-400 text-base mr-2"></i> Update Telegram Link</h4>
                         <div class="flex flex-col sm:flex-row gap-2.5">
                             <input type="url" id="adminTelegramLinkInput" placeholder="https://t.me/your_channel_link" class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400">
-                            <button onclick="updateTelegramLink()" class="px-5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs whitespace-nowrap transition-all shadow-md">
-                                Save Link
-                            </button>
+                            <button id="saveTelegramBtn" class="px-5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs whitespace-nowrap transition-all shadow-md">Save Link</button>
                         </div>
                     </div>
-
                     <div class="p-4 bg-black/50 border border-white/10 rounded-xl space-y-2">
                         <label class="text-xs text-gray-400 font-bold uppercase tracking-wider block">App Color Palette Theme</label>
-                        <select id="themeSelector" onchange="changeAppTheme(this.value)" class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500">
+                        <select id="themeSelector" class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500">
                             <option value="theme-netflix">🔴 Netflix Red (Classic Dark)</option>
                             <option value="theme-cyberpunk">⚡ Cyberpunk Neon</option>
                             <option value="theme-gold">👑 Royal Gold</option>
                         </select>
                     </div>
                 </div>
-
             </main>
         </div>
     </div>
 
-    <!-- Application Logic Script -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBuJA-I_i5ZJiSAtgOHad6tlhUS5xyohw8",
@@ -563,78 +421,186 @@
             measurementId: "G-7W2B19B9PM"
         };
 
-        let db;
+        // ---------- स्थिरांक ----------
+        const AD_LINK = 'https://ourselvesincompetentlearned.com/hezzc6u0?key=dbc42b82439dc417ed5c79905cd0885a';
+        const REQUIRED_AD_WATCH_SEC = 15;
+        const MAX_LINKS = 15;
+        // पासकोड/DOB अब सीधे लिखे नहीं हैं, केवल उनका हैश है (View Source में सीधा दिखेगा नहीं)
+        const PASS_HASH = 2307479812089968;
+        const DOB_HASH = 5518607370176389;
+        const PLACEHOLDER_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450"><rect width="100%" height="100%" fill="#111827"/><text x="50%" y="50%" fill="#6b7280" font-size="18" text-anchor="middle" font-family="sans-serif">No Poster</text></svg>');
+
+        // ---------- स्थिति ----------
+        let db = null;
         let moviesData = [];
         let currentCategory = 'All';
         let searchQuery = '';
         let myChartInstance = null;
-        let currentTelegramLink = 'https://t.me/';
         let selectedMovieObj = null;
-
-        // Language Mode (Default: English)
-        let currentLang = 'EN'; 
-
-        // Secret Admin Toggle Switch Sequence Tracker (Toggle ON -> Toggle OFF unlocks Admin Passcode)
+        let currentLang = 'EN';
         let toggleState = false;
+        let adState = {};      // हर लिंक के लिए: { start, unlocked, timer }
+        let adBtns = {};       // हर लिंक का बटन
+        let pendingState = null;   // रीलोड से पहले की सहेजी स्थिति
+        let stateRestored = false;
+        let failedTries = 0;
+        let lockedUntil = 0;
 
-        // Timed Ad Watch Enforcement System Variables (15 Seconds Required Watch)
-        let adClickTimestamp = 0;
-        let isAdFullyWatched = false;
-        const REQUIRED_AD_WATCH_TIME_MS = 15000; // 15 Seconds
-
-        const ADMIN_PASSCODE = '8815';
-        const RESET_DOB = '01/01/2000';
-        const AD_LINK = 'https://ourselvesincompetentlearned.com/n3ekr8j6?key=065cf53aa3bf38722db0e76ab9572979';
-
-        window.addEventListener('DOMContentLoaded', () => {
-            try {
-                if (!firebase.apps.length) {
-                    firebase.initializeApp(firebaseConfig);
-                }
-                db = firebase.database();
-                setupRealtimeListeners();
-                registerPresenceAndAnalytics();
-            } catch (err) {
-                console.warn("Firebase Init fallback to LocalStorage:", err);
-                loadFromLocalStorage();
+        const STR = {
+            EN: {
+                tg: 'If movie is missing, click here to request on Telegram 🚀',
+                ph: 'Search Movies, Shows...',
+                emptyT: 'No Content Found!',
+                emptyS: 'Please try searching another title or category.'
+            },
+            HI: {
+                tg: 'मूवी न मिले तो यहाँ दबाकर टेलीग्राम पर माँगिए 🚀',
+                ph: 'मूवी, शो या श्रेणी खोजें...',
+                emptyT: 'कुछ नहीं मिला!',
+                emptyS: 'कृपया कोई दूसरा नाम या श्रेणी खोजिए।'
             }
+        };
 
-            setupSearchListeners();
+        // ---------- सहायक फ़ंक्शन ----------
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+        function isHttpUrl(u) { return /^https?:\/\//i.test(String(u || '').trim()); }
+        function localDateStr(d) {
+            const dt = d || new Date();
+            const m = String(dt.getMonth() + 1).padStart(2, '0');
+            const day = String(dt.getDate()).padStart(2, '0');
+            return dt.getFullYear() + '-' + m + '-' + day;
+        }
+        function hashStr(str, seed) {
+            seed = seed || 0;
+            let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+            for (let i = 0, ch; i < str.length; i++) {
+                ch = str.charCodeAt(i);
+                h1 = Math.imul(h1 ^ ch, 2654435761);
+                h2 = Math.imul(h2 ^ ch, 1597334677);
+            }
+            h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+            h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+            return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+        }
+        function $(id) { return document.getElementById(id); }
+
+        // मूवी के सारे लिंक एक ही रूप में (पुराने link1/link2 भी चलेंगे)
+        function getMovieLinks(movie) {
+            let out = [];
+            if (movie && movie.links) {
+                const arr = Array.isArray(movie.links) ? movie.links : Object.values(movie.links);
+                arr.forEach((l, i) => {
+                    if (l && isHttpUrl(l.url)) out.push({ label: (l.label || '').trim() || ('सर्वर ' + (i + 1)), url: l.url.trim() });
+                });
+            } else if (movie) {
+                if (isHttpUrl(movie.link1)) out.push({ label: 'सर्वर 1', url: movie.link1.trim() });
+                if (isHttpUrl(movie.link2)) out.push({ label: 'सर्वर 2', url: movie.link2.trim() });
+            }
+            return out.slice(0, MAX_LINKS);
+        }
+
+        // ---------- शुरुआत ----------
+        window.addEventListener('DOMContentLoaded', () => {
+            bindStaticEvents();
+            pendingState = readViewState();
+            if (pendingState && pendingState.category) currentCategory = pendingState.category;
+            highlightCategory();
+            highlightAdminTab('tab-analytics');
+            resetLinkRows();
+
+            let usedFirebase = false;
+            try {
+                if (typeof firebase !== 'undefined') {
+                    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                    db = firebase.database();
+                    setupRealtimeListeners();
+                    registerPresenceAndAnalytics();
+                    usedFirebase = true;
+                }
+            } catch (err) {
+                console.warn('Firebase Init fallback to LocalStorage:', err);
+                db = null;
+            }
+            if (!usedFirebase) loadFromLocalStorage();
         });
 
-        // Secret Admin Toggle Trigger (Matched Image Design)
+        function bindStaticEvents() {
+            $('logoHome').addEventListener('click', () => filterCategory('All'));
+            $('langToggleBtn').addEventListener('click', toggleAppLanguage);
+            $('secretToggle').addEventListener('click', handleSecretToggleClick);
+            $('closeMovieBtn').addEventListener('click', closeMovieDetailModal);
+            $('closeAuthBtn').addEventListener('click', closeAdminAuthModal);
+            $('passForm').addEventListener('submit', verifyAdminPasscode);
+            $('dobForm').addEventListener('submit', verifyAdminDOB);
+            $('forgotBtn').addEventListener('click', switchToForgotPassState);
+            $('backToLoginBtn').addEventListener('click', switchToAuthPassState);
+            $('sidebarToggleBtn').addEventListener('click', () => $('adminSidebarDrawer').classList.toggle('hidden'));
+            document.querySelectorAll('.closeAdminBtn').forEach(b => b.addEventListener('click', closeAdminPanelModal));
+            document.querySelectorAll('.admin-tab-btn').forEach(b => b.addEventListener('click', () => {
+                switchAdminTab(b.dataset.tab);
+                if (window.innerWidth < 768) $('adminSidebarDrawer').classList.add('hidden');
+            }));
+            document.querySelectorAll('.category-btn').forEach(b => b.addEventListener('click', () => filterCategory(b.dataset.cat)));
+            $('movieForm').addEventListener('submit', handleMovieSubmit);
+            $('formFileImage').addEventListener('change', handleFileSelect);
+            $('addLinkBtn').addEventListener('click', () => addLinkRow('', ''));
+            $('cancelEditBtn').addEventListener('click', resetMovieForm);
+            $('saveTelegramBtn').addEventListener('click', updateTelegramLink);
+            $('themeSelector').addEventListener('change', e => changeAppTheme(e.target.value));
+
+            // खोज: टाइप रुकने के थोड़ी देर बाद नतीजे (बार-बार रेंडर नहीं)
+            let t = null;
+            const handleInput = (e) => {
+                const v = e.target.value;
+                $('searchInputDesktop').value = v;
+                $('searchInputMobile').value = v;
+                clearTimeout(t);
+                t = setTimeout(() => { searchQuery = v.toLowerCase().trim(); renderMovieCards(); }, 200);
+            };
+            $('searchInputDesktop').addEventListener('input', handleInput);
+            $('searchInputMobile').addEventListener('input', handleInput);
+
+            // विज्ञापन-टैब से लौटते ही बटन की गिनती तुरंत ताज़ा करें, और छोड़ते समय स्थिति सहेजें
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') Object.keys(adState).forEach(k => applyLinkState(k));
+                else saveViewState();
+            });
+            window.addEventListener('pagehide', saveViewState);
+            window.addEventListener('pageshow', e => { if (e.persisted) Object.keys(adState).forEach(k => applyLinkState(k)); });
+
+            // बाहर दबाने पर मूवी विंडो बंद
+            $('movieDetailModal').addEventListener('click', e => { if (e.target === $('movieDetailModal')) closeMovieDetailModal(); });
+        }
+
+        // ---------- गुप्त एडमिन स्विच ----------
         function handleSecretToggleClick() {
-            const dot = document.getElementById('toggleDot');
-            
-            if(!toggleState) {
-                // Step 1: Turned ON
+            const dot = $('toggleDot');
+            if (!toggleState) {
                 toggleState = true;
-                if(dot) dot.style.transform = 'translateX(14px)';
+                if (dot) dot.style.transform = 'translateX(14px)';
             } else {
-                // Step 2: Turned OFF -> Unlocks Secret Admin Passcode Modal
                 toggleState = false;
-                if(dot) dot.style.transform = 'translateX(0px)';
+                if (dot) dot.style.transform = 'translateX(0px)';
                 openAdminModal();
             }
         }
 
-        // Toggle Language HI / EN
+        // ---------- भाषा ----------
         function toggleAppLanguage() {
-            if(currentLang === 'EN') {
-                currentLang = 'HI';
-                document.getElementById('currentLangText').innerText = 'HI';
-                document.getElementById('telegramTextDesc').innerText = 'मूवी नहीं मिल रही हो तो इस टेलीग्राम पर ओके करें 🚀';
-                document.getElementById('searchInputDesktop').placeholder = 'मूवी, शो या श्रेणी खोजें...';
-                document.getElementById('searchInputMobile').placeholder = 'मूवी, शो या श्रेणी खोजें...';
-            } else {
-                currentLang = 'EN';
-                document.getElementById('currentLangText').innerText = 'EN';
-                document.getElementById('telegramTextDesc').innerText = 'If movie is missing, click here to request on Telegram 🚀';
-                document.getElementById('searchInputDesktop').placeholder = 'Search Movies, Shows...';
-                document.getElementById('searchInputMobile').placeholder = 'Search Movies, Shows...';
-            }
+            currentLang = currentLang === 'EN' ? 'HI' : 'EN';
+            const s = STR[currentLang];
+            $('currentLangText').innerText = currentLang;
+            $('telegramTextDesc').innerText = s.tg;
+            $('searchInputDesktop').placeholder = s.ph;
+            $('searchInputMobile').placeholder = s.ph;
+            $('emptyTitle').innerText = s.emptyT;
+            $('emptySub').innerText = s.emptyS;
         }
 
+        // ---------- एनालिटिक्स ----------
         function registerPresenceAndAnalytics() {
             if (!db) return;
 
@@ -642,79 +608,52 @@
             presenceRef.set(true);
             presenceRef.onDisconnect().remove();
 
-            db.ref('presence').on('value', (snapshot) => {
-                const count = snapshot.numChildren() || 1;
-                const countEl = document.getElementById('activeUserCount');
-                if (countEl) countEl.innerText = count;
+            db.ref('presence').on('value', snap => {
+                const el = $('activeUserCount');
+                if (el) el.innerText = snap.numChildren() || 1;
             });
 
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = localDateStr();
             const sessionKey = 'visited_' + todayStr;
-
-            if (!sessionStorage.getItem(sessionKey)) {
-                sessionStorage.setItem(sessionKey, 'true');
-                db.ref('analytics/daily/' + todayStr).transaction(curr => (curr || 0) + 1);
-                db.ref('analytics/total_visits').transaction(curr => (curr || 0) + 1);
+            let seen = false;
+            try { seen = !!sessionStorage.getItem(sessionKey); if (!seen) sessionStorage.setItem(sessionKey, 'true'); } catch (e) {}
+            if (!seen) {
+                db.ref('analytics/daily/' + todayStr).transaction(c => (c || 0) + 1);
+                db.ref('analytics/total_visits').transaction(c => (c || 0) + 1);
             }
 
-            db.ref('analytics').on('value', (snapshot) => {
-                const data = snapshot.val() || {};
+            db.ref('analytics').on('value', snap => {
+                const data = snap.val() || {};
                 const daily = data.daily || {};
-                const total = data.total_visits || 0;
-
-                const todayVal = daily[todayStr] || 0;
-                document.getElementById('todayVisitorCount').innerText = todayVal;
-                document.getElementById('totalVisitorCount').innerText = total;
-
+                $('todayVisitorCount').innerText = daily[todayStr] || 0;
+                $('totalVisitorCount').innerText = data.total_visits || 0;
                 renderVisitorLineChart(daily);
             });
         }
 
         function renderVisitorLineChart(dailyData) {
-            const canvas = document.getElementById('visitorChart');
-            if (!canvas) return;
+            const canvas = $('visitorChart');
+            if (!canvas || typeof Chart === 'undefined') return;
             const ctx = canvas.getContext('2d');
-            
-            const labels = [];
-            const dataPoints = [];
-
+            const labels = [], points = [];
             for (let i = 6; i >= 0; i--) {
                 const d = new Date();
                 d.setDate(d.getDate() - i);
-                const dateStr = d.toISOString().split('T')[0];
-                const displayLabel = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                
-                labels.push(displayLabel);
-                dataPoints.push(dailyData[dateStr] || 0);
+                labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                points.push(dailyData[localDateStr(d)] || 0);
             }
-
-            if (myChartInstance) {
-                myChartInstance.destroy();
-            }
-
+            if (myChartInstance) myChartInstance.destroy();
             myChartInstance = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Daily Visitors',
-                        data: dataPoints,
-                        borderColor: '#e50914',
-                        backgroundColor: 'rgba(229, 9, 20, 0.2)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 2.5,
-                        pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#e50914',
-                        pointRadius: 4
-                    }]
-                },
+                data: { labels, datasets: [{
+                    label: 'Daily Visitors', data: points,
+                    borderColor: '#e50914', backgroundColor: 'rgba(229, 9, 20, 0.2)',
+                    fill: true, tension: 0.4, borderWidth: 2.5,
+                    pointBackgroundColor: '#ffffff', pointBorderColor: '#e50914', pointRadius: 4
+                }] },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: '#cccccc', font: { family: 'Poppins', size: 10 } } }
-                    },
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#cccccc', font: { family: 'Poppins', size: 10 } } } },
                     scales: {
                         x: { ticks: { color: '#888888', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
                         y: { ticks: { color: '#888888', precision: 0, font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
@@ -723,403 +662,562 @@
             });
         }
 
+        // ---------- Firebase सुनने वाले ----------
         function setupRealtimeListeners() {
-            db.ref('movies').on('value', (snapshot) => {
-                const val = snapshot.val();
+            db.ref('movies').on('value', snap => {
+                const val = snap.val();
                 moviesData = [];
-                if (val) {
-                    Object.keys(val).forEach(key => {
-                        moviesData.push({ id: key, ...val[key] });
-                    });
-                }
+                if (val) Object.keys(val).forEach(k => { if (val[k]) moviesData.push(Object.assign({ id: k }, val[k])); });
                 renderMovieCards();
                 renderAdminList();
-            });
+            }, err => console.warn('movies read error', err));
 
-            db.ref('settings/theme').on('value', (snapshot) => {
-                const theme = snapshot.val();
+            db.ref('settings/theme').on('value', snap => {
+                const theme = snap.val();
                 if (theme) {
                     document.body.className = theme + ' min-h-screen flex flex-col';
-                    const themeSel = document.getElementById('themeSelector');
-                    if(themeSel) themeSel.value = theme;
+                    const sel = $('themeSelector'); if (sel) sel.value = theme;
                 }
             });
 
-            db.ref('settings/telegram_link').on('value', (snapshot) => {
-                const link = snapshot.val();
-                if (link) {
-                    currentTelegramLink = link;
-                    document.getElementById('telegramUserBannerLink').href = link;
-                    const input = document.getElementById('adminTelegramLinkInput');
-                    if(input) input.value = link;
+            db.ref('settings/telegram_link').on('value', snap => {
+                const link = snap.val();
+                if (link && isHttpUrl(link)) {
+                    $('telegramUserBannerLink').href = link;
+                    const input = $('adminTelegramLinkInput'); if (input) input.value = link;
                 }
             });
         }
 
         function updateTelegramLink() {
-            const newLink = document.getElementById('adminTelegramLinkInput').value.trim();
-            if (newLink) {
-                if (db) {
-                    db.ref('settings/telegram_link').set(newLink);
-                } else {
-                    currentTelegramLink = newLink;
-                    document.getElementById('telegramUserBannerLink').href = newLink;
-                }
-                alert("Telegram Link updated successfully!");
-            }
+            const newLink = $('adminTelegramLinkInput').value.trim();
+            if (!isHttpUrl(newLink)) { alert('कृपया सही लिंक डालिए (https:// से शुरू)।'); return; }
+            if (db) db.ref('settings/telegram_link').set(newLink);
+            $('telegramUserBannerLink').href = newLink;
+            alert('टेलीग्राम लिंक सहेज लिया गया!');
         }
 
+        // ---------- लोकल स्टोरेज (Firebase न चले तो) ----------
         function loadFromLocalStorage() {
-            const stored = localStorage.getItem('cine_movies');
+            let stored = null;
+            try { stored = localStorage.getItem('cine_movies'); } catch (e) {}
             if (stored) {
-                moviesData = JSON.parse(stored);
+                try { moviesData = JSON.parse(stored) || []; } catch (e) { moviesData = []; }
             } else {
-                moviesData = [
-                    {
-                        id: 'm1',
-                        title: 'Pushpa: The Rise (4K Ultra HD)',
-                        category: 'Bollywood',
-                        image: 'https://m.media-amazon.com/images/M/MV5BMDFkYTc0MGEtZmNhMC00ZDIzLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_.jpg',
-                        link1: 'https://example.com/stream/pushpa',
-                        link2: 'https://example.com/backup/pushpa',
-                        desc: 'Story of Pushpa Raj who rises from a daily wage worker to the king of red sandalwood smuggling.'
-                    }
-                ];
+                moviesData = [{
+                    id: 'm1',
+                    title: 'Sample Movie (Demo)',
+                    category: 'Bollywood',
+                    image: PLACEHOLDER_IMG,
+                    links: [{ label: 'सर्वर 1', url: 'https://example.com/stream/demo' }],
+                    desc: 'यह एक नमूना मूवी है। एडमिन पैनल से असली मूवी जोड़िए।'
+                }];
                 saveToLocalStorage();
             }
             renderMovieCards();
             renderAdminList();
         }
-
         function saveToLocalStorage() {
-            localStorage.setItem('cine_movies', JSON.stringify(moviesData));
+            try { localStorage.setItem('cine_movies', JSON.stringify(moviesData)); } catch (e) { alert('स्टोरेज भर गया है, छोटी फ़ोटो चुनिए।'); }
         }
 
-        function setupSearchListeners() {
-            const deskInput = document.getElementById('searchInputDesktop');
-            const mobInput = document.getElementById('searchInputMobile');
-
-            const handleInput = (e) => {
-                searchQuery = e.target.value.toLowerCase().trim();
-                renderMovieCards();
-            };
-
-            if (deskInput) deskInput.addEventListener('input', handleInput);
-            if (mobInput) mobInput.addEventListener('input', handleInput);
+        // ---------- श्रेणी और कार्ड ----------
+        function highlightCategory() {
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                const active = btn.dataset.cat === currentCategory;
+                btn.className = 'category-btn px-4 py-1.5 rounded-lg text-xs whitespace-nowrap border ' + (active
+                    ? 'font-bold bg-red-600 text-white border-red-500 shadow-md'
+                    : 'font-semibold bg-white/5 hover:bg-white/15 border-white/10 text-gray-300');
+            });
         }
-
         function filterCategory(cat) {
             currentCategory = cat;
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                if (btn.innerText.includes(cat) || (cat === 'All' && btn.innerText.includes('All'))) {
-                    btn.className = 'category-btn active px-4 py-1.5 rounded-lg text-xs font-bold bg-red-600 text-white whitespace-nowrap border border-red-500 shadow-md';
-                } else {
-                    btn.className = 'category-btn px-4 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/15 whitespace-nowrap border border-white/10 text-gray-300';
-                }
-            });
+            highlightCategory();
             renderMovieCards();
+            saveViewState();
         }
 
         function renderMovieCards() {
-            const grid = document.getElementById('movieGrid');
-            const emptyState = document.getElementById('emptyState');
+            const grid = $('movieGrid');
+            const emptyState = $('emptyState');
             grid.innerHTML = '';
 
-            const filtered = moviesData.filter(movie => {
-                const matchesCat = (currentCategory === 'All') || (movie.category === currentCategory);
-                const matchesSearch = movie.title.toLowerCase().includes(searchQuery) || movie.desc.toLowerCase().includes(searchQuery);
-                return matchesCat && matchesSearch;
+            const filtered = moviesData.filter(m => {
+                const okCat = currentCategory === 'All' || m.category === currentCategory;
+                const title = String(m.title || '').toLowerCase();
+                const desc = String(m.desc || '').toLowerCase();
+                return okCat && (title.includes(searchQuery) || desc.includes(searchQuery));
             });
 
             if (filtered.length === 0) {
                 emptyState.classList.remove('hidden');
                 emptyState.classList.add('flex');
-            } else {
-                emptyState.classList.add('hidden');
-                emptyState.classList.remove('flex');
-
-                filtered.forEach(movie => {
-                    const card = document.createElement('div');
-                    card.className = 'movie-card bg-gray-900/80 border border-white/10 rounded-xl overflow-hidden cursor-pointer flex flex-col group';
-                    card.onclick = () => openMovieDetailModal(movie);
-
-                    card.innerHTML = `
-                        <div class="relative aspect-[2/3] overflow-hidden bg-black">
-                            <img src="${movie.image}" alt="${movie.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
-                            <div class="absolute top-1.5 left-1.5">
-                                <span class="px-1.5 py-0.5 text-[8px] font-extrabold uppercase rounded bg-black/80 backdrop-blur-md text-red-400 border border-red-500/30">
-                                    ${movie.category}
-                                </span>
-                            </div>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
-                            <div class="absolute bottom-1.5 left-1.5 right-1.5 flex justify-between items-center text-[9px] text-gray-300">
-                                <span><i class="fa-solid fa-star text-amber-400 mr-0.5"></i>4.9</span>
-                                <span class="bg-red-600/80 px-1 py-0.5 rounded text-white text-[8px] font-bold">4K</span>
-                            </div>
-                        </div>
-                        <div class="p-2.5 flex flex-col flex-grow justify-between bg-gray-950">
-                            <h4 class="text-[11px] font-bold text-white line-clamp-2 leading-tight group-hover:text-red-400 transition-colors">${movie.title}</h4>
-                            <span class="text-[9px] text-gray-400 mt-1.5 block flex items-center font-semibold">
-                                <i class="fa-solid fa-play text-red-500 mr-1"></i> Watch Now
-                            </span>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
+                restoreViewState();
+                return;
             }
+            emptyState.classList.add('hidden');
+            emptyState.classList.remove('flex');
+
+            filtered.forEach(movie => {
+                const card = document.createElement('div');
+                card.className = 'movie-card bg-gray-900/80 border border-white/10 rounded-xl overflow-hidden cursor-pointer flex flex-col group';
+                card.addEventListener('click', () => openMovieDetailModal(movie));
+                card.innerHTML =
+                    '<div class="relative aspect-[2/3] overflow-hidden bg-black">' +
+                        '<img data-poster class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" alt="">' +
+                        '<div class="absolute top-1.5 left-1.5"><span class="px-1.5 py-0.5 text-[8px] font-extrabold uppercase rounded bg-black/80 backdrop-blur-md text-red-400 border border-red-500/30">' + esc(movie.category) + '</span></div>' +
+                        '<div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>' +
+                        '<div class="absolute bottom-1.5 left-1.5 right-1.5 flex justify-between items-center text-[9px] text-gray-300">' +
+                            '<span><i class="fa-solid fa-star text-amber-400 mr-0.5"></i>4.9</span>' +
+                            '<span class="bg-red-600/80 px-1 py-0.5 rounded text-white text-[8px] font-bold">4K</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="p-2.5 flex flex-col flex-grow justify-between bg-gray-950">' +
+                        '<h4 class="text-[11px] font-bold text-white line-clamp-2 leading-tight group-hover:text-red-400 transition-colors">' + esc(movie.title) + '</h4>' +
+                        '<span class="text-[9px] text-gray-400 mt-1.5 block font-semibold"><i class="fa-solid fa-play text-red-500 mr-1"></i> Watch Now</span>' +
+                    '</div>';
+                setSafeImage(card.querySelector('[data-poster]'), movie.image, movie.title);
+                grid.appendChild(card);
+            });
+            restoreViewState();
         }
 
-        // Open Movie Detail Modal
-        function openMovieDetailModal(movie) {
+        function setSafeImage(img, src, alt) {
+            img.alt = alt || '';
+            img.onerror = function () { this.onerror = null; this.src = PLACEHOLDER_IMG; };
+            img.src = src || PLACEHOLDER_IMG;
+        }
+
+        // ---------- मूवी विंडो और विज्ञापन-गेट ----------
+        // ब्राउज़र विज्ञापन-टैब खुलते समय इस पेज को मेमोरी से हटाकर दोबारा लोड कर सकता है।
+        // इसलिए हम स्थिति (कौन-सी मूवी खुली थी, विज्ञापन कब शुरू हुआ) सहेजते हैं और लौटने पर वही दोबारा खोल देते हैं।
+        const STATE_KEY = 'cs_view_state_v1';
+        const STATE_TTL_MS = 30 * 60 * 1000;
+        const BTN_BASE = 'w-full py-3 px-3 text-white font-extrabold rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-xl transition-all bg-gradient-to-r ';
+        const BTN_COLORS = {
+            red: 'from-red-600 via-red-500 to-amber-600 hover:from-red-700 hover:to-amber-700',
+            gray: 'from-gray-600 via-gray-600 to-gray-700',
+            green: 'from-green-600 via-green-500 to-emerald-600'
+        };
+
+        function saveViewState() {
+            try {
+                const ads = {};
+                Object.keys(adState).forEach(k => { ads[k] = { start: adState[k].start, unlocked: !!adState[k].unlocked }; });
+                localStorage.setItem(STATE_KEY, JSON.stringify({
+                    movieId: selectedMovieObj ? selectedMovieObj.id : null,
+                    ads: ads,
+                    category: currentCategory,
+                    scrollY: window.scrollY || 0,
+                    savedAt: Date.now()
+                }));
+            } catch (e) {}
+        }
+        function readViewState() {
+            try {
+                const raw = localStorage.getItem(STATE_KEY);
+                if (!raw) return null;
+                const st = JSON.parse(raw);
+                if (!st || (Date.now() - (st.savedAt || 0)) > STATE_TTL_MS) return null;
+                return st;
+            } catch (e) { return null; }
+        }
+        function restoreViewState() {
+            if (stateRestored || !pendingState || moviesData.length === 0) return;
+            stateRestored = true;
+            const st = pendingState;
+            pendingState = null;
+            if (st.movieId) {
+                const movie = moviesData.find(m => m.id === st.movieId);
+                if (movie) openMovieDetailModal(movie, st.ads);
+            }
+            if (st.scrollY) setTimeout(() => window.scrollTo(0, st.scrollY), 60);
+        }
+
+        function clearAdTimers() {
+            Object.keys(adState).forEach(k => { if (adState[k] && adState[k].timer) clearInterval(adState[k].timer); });
+            adState = {};
+            adBtns = {};
+        }
+
+        function openMovieDetailModal(movie, savedAds) {
+            clearAdTimers();
             selectedMovieObj = movie;
-            adClickTimestamp = 0;
-            isAdFullyWatched = false;
+            if (savedAds) {
+                Object.keys(savedAds).forEach(k => {
+                    if (savedAds[k] && savedAds[k].start) adState[k] = { start: savedAds[k].start, unlocked: !!savedAds[k].unlocked, timer: null };
+                });
+            }
 
-            document.getElementById('modalMoviePoster').src = movie.image;
-            document.getElementById('modalMovieTitle').innerText = movie.title;
-            document.getElementById('modalMovieCategory').innerText = movie.category;
-            document.getElementById('modalMovieDesc').innerText = movie.desc;
-
-            // Reset Player Status Text
-            document.getElementById('statusText').innerText = currentLang === 'EN' ? 'Click button below to watch full video' : 'वीडियो देखने के लिए नीचे दिए गए बटन पर क्लिक करें';
-            document.getElementById('statusIcon').className = 'fa-solid fa-shield-halved text-amber-400';
-            document.getElementById('playBtnText').innerText = currentLang === 'EN' ? '▶️ Watch Video / Play Now' : '▶️ वीडियो देखें / प्ले करें';
-            document.getElementById('backupServerBox').classList.add('hidden');
-
-            document.getElementById('movieDetailModal').classList.remove('hidden');
+            setSafeImage($('modalMoviePoster'), movie.image, movie.title);
+            $('modalMovieTitle').innerText = movie.title || '';
+            $('modalMovieCategory').innerText = movie.category || '';
+            $('modalMovieDesc').innerText = movie.desc || '';
+            setStatus('fa-solid fa-shield-halved text-amber-400', 'वीडियो देखने के लिए नीचे दिए गए बटन को दबाइए');
+            renderLinkButtons();
+            $('movieDetailModal').classList.remove('hidden');
+            saveViewState();
         }
 
         function closeMovieDetailModal() {
-            document.getElementById('movieDetailModal').classList.add('hidden');
+            clearAdTimers();
+            selectedMovieObj = null;
+            $('movieDetailModal').classList.add('hidden');
+            saveViewState();
         }
 
-        // Timed Ad Watch Verification Logic (Requires 15 seconds)
-        function handleSmartVideoPlay() {
-            if (!selectedMovieObj) return;
+        function setStatus(iconClass, text) {
+            $('statusIcon').className = iconClass;
+            $('statusText').innerText = text;
+        }
 
-            const now = Date.now();
+        function renderLinkButtons() {
+            const box = $('linksList');
+            box.innerHTML = '';
+            adBtns = {};
+            const links = getMovieLinks(selectedMovieObj);
 
-            if (!isAdFullyWatched) {
-                if (adClickTimestamp === 0) {
-                    // First Click -> Open Sponsored Ad and Start 15s Timer
-                    adClickTimestamp = now;
-                    window.open(AD_LINK, '_blank');
+            if (links.length === 0) {
+                const p = document.createElement('p');
+                p.className = 'text-[12px] font-semibold text-white';
+                p.innerText = 'इस वीडियो का लिंक अभी उपलब्ध नहीं है। कृपया टेलीग्राम पर बताइए।';
+                box.appendChild(p);
+                return;
+            }
 
-                    document.getElementById('statusText').innerText = currentLang === 'EN' ? 'Please watch advertisement for 15 seconds...' : 'कृपया 15 सेकंड विज्ञापन देखें... तभी वीडियो लिंक खुलेगा!';
-                    document.getElementById('statusIcon').className = 'fa-solid fa-clock text-yellow-400 animate-spin';
-                    document.getElementById('playBtnText').innerText = currentLang === 'EN' ? '⏳ Ad In Progress (Click here once watched)...' : '⏳ विज्ञापन देखा जा रहा है (यहाँ क्लिक करें)...';
-                } else {
-                    // User came back! Verify if 15 seconds passed
-                    const timeSpent = now - adClickTimestamp;
+            links.forEach((lnk, i) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = BTN_BASE + BTN_COLORS.red;
+                btn.innerHTML = '<i class="fa-solid fa-circle-play text-lg"></i><span></span>';
+                btn.querySelector('span').innerText = '▶️ ' + lnk.label + ' — वीडियो देखें';
+                btn.addEventListener('click', () => handleLinkClick(i));
+                box.appendChild(btn);
+                adBtns[i] = { btn: btn, lnk: lnk };
+                if (adState[i]) applyLinkState(i);   // पेज दोबारा खुला हो तो पुरानी स्थिति लौटाइए
+            });
+        }
 
-                    if (timeSpent >= REQUIRED_AD_WATCH_TIME_MS) {
-                        // Success -> Video Unlocked
-                        isAdFullyWatched = true;
-                        document.getElementById('statusText').innerText = currentLang === 'EN' ? '🎉 Ad Verified! Video is now unlocked.' : '🎉 विज्ञापन सत्यापित हुआ! अब आपका वीडियो अनलॉक है।';
-                        document.getElementById('statusIcon').className = 'fa-solid fa-circle-check text-green-400';
-                        document.getElementById('playBtnText').innerText = currentLang === 'EN' ? '🎬 Start Video Stream (Watch Now)' : '🎬 वीडियो शुरू करें (Watch Now)';
-                        document.getElementById('backupServerBox').classList.remove('hidden');
+        // बटन की स्थिति (गिनती / हरा) को असली समय के हिसाब से ताज़ा करता है
+        function applyLinkState(i) {
+            const ref = adBtns[i];
+            const st = adState[i];
+            if (!ref || !st) return;
+            const label = ref.btn.querySelector('span');
+            const left = REQUIRED_AD_WATCH_SEC - Math.floor((Date.now() - st.start) / 1000);
 
-                        if (selectedMovieObj.link2) {
-                            document.getElementById('backupServerBtn').href = selectedMovieObj.link2;
-                        } else {
-                            document.getElementById('backupServerBtn').href = selectedMovieObj.link1;
-                        }
-                    } else {
-                        // Returned early -> Require remaining time
-                        const secondsLeft = Math.ceil((REQUIRED_AD_WATCH_TIME_MS - timeSpent) / 1000);
-                        alert(currentLang === 'EN' ? `⚠️ You haven't watched the full ad! Please wait ${secondsLeft} more seconds.` : `⚠️ आपने विज्ञापन पूरा नहीं देखा! कृपया ${secondsLeft} सेकंड और रुकें।`);
-                        window.open(AD_LINK, '_blank');
-                    }
-                }
+            if (st.unlocked || left <= 0) {
+                if (st.timer) { clearInterval(st.timer); st.timer = null; }
+                if (!st.unlocked) { st.unlocked = true; saveViewState(); }
+                ref.btn.className = BTN_BASE + BTN_COLORS.green;
+                label.innerText = '🎬 ' + ref.lnk.label + ' — अब वीडियो खोलें';
+                setStatus('fa-solid fa-circle-check text-green-400', '🎉 विज्ञापन पूरा हुआ! अब हरे बटन को दबाइए, आपका वीडियो खुल जाएगा।');
             } else {
-                // Fully Verified -> Open Real Video
-                window.open(selectedMovieObj.link1, '_blank');
+                ref.btn.className = BTN_BASE + BTN_COLORS.gray;
+                label.innerText = '⏳ विज्ञापन देखिए… ' + left + ' सेकंड बाकी';
+                setStatus('fa-solid fa-clock text-yellow-400', 'कृपया विज्ञापन के पृष्ठ पर 15 सेकंड रुकिए, फिर यहाँ लौट आइए।');
+                if (!st.timer) st.timer = setInterval(() => applyLinkState(i), 500);
             }
         }
 
-        // Desktop Admin Drawer Tabs
-        function switchAdminTab(tabId) {
-            document.querySelectorAll('.admin-tab-content').forEach(tab => tab.classList.add('hidden'));
+        function handleLinkClick(i) {
+            const ref = adBtns[i];
+            if (!ref) return;
+            const st = adState[i];
+
+            // विज्ञापन पूरा हो चुका -> असली वीडियो खोलिए
+            if (st && st.unlocked) {
+                if (isHttpUrl(ref.lnk.url)) window.open(ref.lnk.url, '_blank', 'noopener');
+                return;
+            }
+
+            // विज्ञापन चल रहा है और यूज़र जल्दी लौट आया
+            if (st && st.start) {
+                applyLinkState(i);
+                if (!adState[i].unlocked) {
+                    const left = Math.max(1, REQUIRED_AD_WATCH_SEC - Math.floor((Date.now() - st.start) / 1000));
+                    setStatus('fa-solid fa-clock text-yellow-400', '⚠️ विज्ञापन अभी पूरा नहीं हुआ। कृपया ' + left + ' सेकंड और रुकिए।');
+                }
+                return;
+            }
+
+            // पहली बार: विज्ञापन खोलिए और 15 सेकंड की गिनती शुरू
+            adState[i] = { start: Date.now(), unlocked: false, timer: null };
+            saveViewState();                       // विज्ञापन-टैब खुलने से पहले ही स्थिति सहेज लीजिए
+            window.open(AD_LINK, '_blank', 'noopener');
+            applyLinkState(i);
+        }
+
+        // ---------- एडमिन: टैब ----------
+        function highlightAdminTab(tabId) {
             document.querySelectorAll('.admin-tab-btn').forEach(btn => {
-                btn.className = 'admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5 text-gray-400 hover:text-white hover:bg-white/5';
+                const active = btn.dataset.tab === tabId;
+                btn.className = 'admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5 ' + (active
+                    ? 'text-red-400 bg-red-600/10 border border-red-500/20'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5');
             });
-
-            document.getElementById(tabId).classList.remove('hidden');
-            event.currentTarget.className = 'admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5 text-red-400 bg-red-600/10 border border-red-500/20';
+        }
+        function switchAdminTab(tabId) {
+            document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.add('hidden'));
+            const target = $(tabId);
+            if (target) target.classList.remove('hidden');
+            highlightAdminTab(tabId);
         }
 
-        function toggleAdminSidebar() {
-            const drawer = document.getElementById('adminSidebarDrawer');
-            drawer.classList.toggle('hidden');
+        // ---------- एडमिन: लिंक पंक्तियाँ (अधिकतम 15) ----------
+        function linkRowCount() { return $('linkRows').children.length; }
+        function updateLinkCounter() {
+            const n = linkRowCount();
+            $('linkCounter').innerText = n + '/' + MAX_LINKS;
+            $('addLinkBtn').classList.toggle('hidden', n >= MAX_LINKS);
+        }
+        function addLinkRow(label, url) {
+            if (linkRowCount() >= MAX_LINKS) { alert('अधिकतम ' + MAX_LINKS + ' लिंक ही जोड़ सकते हैं।'); return; }
+            const row = document.createElement('div');
+            row.className = 'link-row flex items-center gap-2';
+            row.innerHTML =
+                '<input type="text" class="link-label w-24 sm:w-32 bg-black/60 border border-white/10 rounded-xl px-2 py-2 text-[11px] text-white focus:outline-none focus:border-red-500" placeholder="नाम">' +
+                '<input type="url" class="link-url flex-1 min-w-0 bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500" placeholder="https://...">' +
+                '<button type="button" class="link-remove w-8 h-8 flex-shrink-0 rounded-lg bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white text-xs" title="यह लिंक हटाइए"><i class="fa-solid fa-xmark"></i></button>';
+            row.querySelector('.link-label').value = label || '';
+            row.querySelector('.link-url').value = url || '';
+            row.querySelector('.link-label').placeholder = 'सर्वर ' + (linkRowCount() + 1);
+            row.querySelector('.link-remove').addEventListener('click', () => {
+                if (linkRowCount() <= 1) { row.querySelector('.link-url').value = ''; row.querySelector('.link-label').value = ''; return; }
+                row.remove();
+                updateLinkCounter();
+            });
+            $('linkRows').appendChild(row);
+            updateLinkCounter();
+        }
+        function resetLinkRows(links) {
+            $('linkRows').innerHTML = '';
+            if (links && links.length) links.forEach(l => addLinkRow(l.label, l.url));
+            else addLinkRow('', '');
+        }
+        function collectLinks() {
+            const out = [];
+            document.querySelectorAll('#linkRows .link-row').forEach((row, i) => {
+                const url = row.querySelector('.link-url').value.trim();
+                const label = row.querySelector('.link-label').value.trim() || ('सर्वर ' + (out.length + 1));
+                if (url) out.push({ label, url });
+            });
+            return out;
         }
 
+        // ---------- एडमिन: सूची, फ़ॉर्म ----------
         function renderAdminList() {
-            const list = document.getElementById('adminMovieList');
-            const countEl = document.getElementById('totalMoviesCount');
+            const list = $('adminMovieList');
+            const countEl = $('totalMoviesCount');
             if (!list) return;
-
             list.innerHTML = '';
             if (countEl) countEl.innerText = moviesData.length;
 
             moviesData.forEach(movie => {
                 const item = document.createElement('div');
                 item.className = 'flex items-center justify-between bg-black/60 border border-white/10 p-2.5 rounded-xl';
-                item.innerHTML = `
-                    <div class="flex items-center space-x-2.5 overflow-hidden">
-                        <img src="${movie.image}" class="w-9 h-11 object-cover rounded-lg border border-white/10">
-                        <div class="truncate">
-                            <h5 class="text-xs font-bold text-white truncate">${movie.title}</h5>
-                            <span class="text-[10px] text-gray-400">${movie.category}</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-1.5">
-                        <button onclick="editMovie('${movie.id}')" class="p-1.5 text-blue-400 hover:bg-blue-400/20 rounded-lg"><i class="fa-solid fa-pen-to-square text-xs"></i></button>
-                        <button onclick="deleteMovie('${movie.id}')" class="p-1.5 text-red-400 hover:bg-red-400/20 rounded-lg"><i class="fa-solid fa-trash text-xs"></i></button>
-                    </div>
-                `;
+                const n = getMovieLinks(movie).length;
+                item.innerHTML =
+                    '<div class="flex items-center space-x-2.5 overflow-hidden">' +
+                        '<img data-thumb class="w-9 h-11 object-cover rounded-lg border border-white/10" alt="">' +
+                        '<div class="truncate">' +
+                            '<h5 class="text-xs font-bold text-white truncate">' + esc(movie.title) + '</h5>' +
+                            '<span class="text-[10px] text-gray-400">' + esc(movie.category) + ' • ' + n + ' लिंक</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="flex items-center space-x-1.5">' +
+                        '<button data-edit class="p-1.5 text-blue-400 hover:bg-blue-400/20 rounded-lg"><i class="fa-solid fa-pen-to-square text-xs"></i></button>' +
+                        '<button data-del class="p-1.5 text-red-400 hover:bg-red-400/20 rounded-lg"><i class="fa-solid fa-trash text-xs"></i></button>' +
+                    '</div>';
+                setSafeImage(item.querySelector('[data-thumb]'), movie.image, movie.title);
+                item.querySelector('[data-edit]').addEventListener('click', () => editMovie(movie.id));
+                item.querySelector('[data-del]').addEventListener('click', () => deleteMovie(movie.id));
                 list.appendChild(item);
             });
         }
 
+        // फ़ोटो को छोटा करके सहेजना (डेटाबेस भारी न हो)
         function handleFileSelect(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    document.getElementById('finalImageHolder').value = evt.target.result;
-                    document.getElementById('formUrlImage').value = '';
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                const img = new Image();
+                img.onload = function () {
+                    const maxW = 400;
+                    const scale = Math.min(1, maxW / img.width);
+                    const c = document.createElement('canvas');
+                    c.width = Math.round(img.width * scale);
+                    c.height = Math.round(img.height * scale);
+                    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+                    $('finalImageHolder').value = c.toDataURL('image/jpeg', 0.8);
+                    $('formUrlImage').value = '';
+                    $('fileChosenText').innerText = '✅ ' + file.name;
                 };
-                reader.readAsDataURL(file);
-            }
+                img.onerror = function () { alert('यह फ़ोटो पढ़ी नहीं जा सकी, दूसरी चुनिए।'); };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetMovieForm() {
+            $('editMovieId').value = '';
+            $('formTitle').value = '';
+            $('formCategory').value = 'Bollywood';
+            $('formUrlImage').value = '';
+            $('finalImageHolder').value = '';
+            $('formFileImage').value = '';
+            $('fileChosenText').innerText = 'Choose File From Device';
+            $('formDesc').value = '';
+            resetLinkRows();
+            $('formHeading').innerText = '🎬 Add New Movie / Video Link';
+            $('submitMovieBtn').innerText = 'Publish Content Now';
+            $('cancelEditBtn').classList.add('hidden');
         }
 
         function handleMovieSubmit(e) {
             e.preventDefault();
-            const editId = document.getElementById('editMovieId').value;
-            const title = document.getElementById('formTitle').value.trim();
-            const category = document.getElementById('formCategory').value;
-            const urlImage = document.getElementById('formUrlImage').value.trim();
-            const fileImage = document.getElementById('finalImageHolder').value;
-            const link1 = document.getElementById('formLink1').value.trim();
-            const link2 = document.getElementById('formLink2').value.trim();
-            const desc = document.getElementById('formDesc').value.trim();
+            const editId = $('editMovieId').value;
+            const title = $('formTitle').value.trim();
+            const category = $('formCategory').value;
+            const urlImage = $('formUrlImage').value.trim();
+            const fileImage = $('finalImageHolder').value;
+            const desc = $('formDesc').value.trim();
+            const links = collectLinks();
 
-            const image = fileImage || urlImage || 'https://via.placeholder.com/300x450';
-            const payload = { title, category, image, link1, link2, desc };
+            if (links.length === 0) { alert('कम से कम एक वीडियो लिंक डालना ज़रूरी है।'); return; }
+            if (links.some(l => !isHttpUrl(l.url))) { alert('सभी लिंक https:// या http:// से शुरू होने चाहिए।'); return; }
+
+            let image = fileImage || urlImage;
+            if (!image && editId) {
+                const old = moviesData.find(m => m.id === editId);
+                image = old && old.image;
+            }
+            if (!image) image = PLACEHOLDER_IMG;
+            if (urlImage && !fileImage && !isHttpUrl(urlImage)) { alert('फ़ोटो का लिंक सही नहीं है।'); return; }
+
+            const payload = {
+                title, category, image, desc, links,
+                link1: links[0].url,
+                link2: links[1] ? links[1].url : ''
+            };
 
             if (db) {
-                if (editId) {
-                    db.ref('movies/' + editId).update(payload);
-                } else {
-                    db.ref('movies').push(payload);
-                }
+                if (editId) db.ref('movies/' + editId).update(payload);
+                else db.ref('movies').push(payload);
             } else {
                 if (editId) {
                     const idx = moviesData.findIndex(m => m.id === editId);
-                    if (idx !== -1) moviesData[idx] = { id: editId, ...payload };
+                    if (idx !== -1) moviesData[idx] = Object.assign({ id: editId }, payload);
                 } else {
-                    moviesData.push({ id: 'm_' + Date.now(), ...payload });
+                    moviesData.push(Object.assign({ id: 'm_' + Date.now() }, payload));
                 }
                 saveToLocalStorage();
                 renderMovieCards();
                 renderAdminList();
             }
 
-            document.getElementById('editMovieId').value = '';
-            document.getElementById('formTitle').value = '';
-            document.getElementById('formUrlImage').value = '';
-            document.getElementById('finalImageHolder').value = '';
-            document.getElementById('formLink1').value = '';
-            document.getElementById('formLink2').value = '';
-            document.getElementById('formDesc').value = '';
-            alert("Movie saved and published successfully!");
+            resetMovieForm();
+            alert('सामग्री सहेजकर प्रकाशित कर दी गई!');
         }
 
         function editMovie(id) {
             const movie = moviesData.find(m => m.id === id);
             if (!movie) return;
-
             switchAdminTab('tab-add-movie');
-            document.getElementById('editMovieId').value = movie.id;
-            document.getElementById('formTitle').value = movie.title;
-            document.getElementById('formCategory').value = movie.category;
-            document.getElementById('formUrlImage').value = movie.image;
-            document.getElementById('formLink1').value = movie.link1;
-            document.getElementById('formLink2').value = movie.link2 || '';
-            document.getElementById('formDesc').value = movie.desc;
+            $('editMovieId').value = movie.id;
+            $('formTitle').value = movie.title || '';
+            $('formCategory').value = movie.category || 'Bollywood';
+            $('formUrlImage').value = isHttpUrl(movie.image) ? movie.image : '';
+            $('finalImageHolder').value = '';
+            $('formDesc').value = movie.desc || '';
+            resetLinkRows(getMovieLinks(movie));
+            $('formHeading').innerText = '✏️ बदलाव करें';
+            $('submitMovieBtn').innerText = 'बदलाव सहेजें';
+            $('cancelEditBtn').classList.remove('hidden');
         }
 
         function deleteMovie(id) {
-            if (confirm("Are you sure you want to delete this content?")) {
-                if (db) {
-                    db.ref('movies/' + id).remove();
-                } else {
-                    moviesData = moviesData.filter(m => m.id !== id);
-                    saveToLocalStorage();
-                    renderMovieCards();
-                    renderAdminList();
-                }
+            if (!confirm('क्या आप सच में इस सामग्री को हटाना चाहते हैं?')) return;
+            if (db) {
+                db.ref('movies/' + id).remove();
+            } else {
+                moviesData = moviesData.filter(m => m.id !== id);
+                saveToLocalStorage();
+                renderMovieCards();
+                renderAdminList();
             }
         }
 
         function changeAppTheme(themeClass) {
             document.body.className = themeClass + ' min-h-screen flex flex-col';
-            if (db) {
-                db.ref('settings/theme').set(themeClass);
-            }
+            if (db) db.ref('settings/theme').set(themeClass);
         }
 
+        // ---------- एडमिन लॉगिन ----------
         function openAdminModal() {
-            document.getElementById('adminAuthModal').classList.remove('hidden');
-            document.getElementById('authFormState').classList.remove('hidden');
-            document.getElementById('forgotFormState').classList.add('hidden');
-            document.getElementById('adminPassInput').value = '';
-            document.getElementById('authErrorMsg').classList.add('hidden');
+            $('adminAuthModal').classList.remove('hidden');
+            $('authFormState').classList.remove('hidden');
+            $('forgotFormState').classList.add('hidden');
+            $('adminPassInput').value = '';
+            $('authErrorMsg').classList.add('hidden');
         }
+        function closeAdminAuthModal() { $('adminAuthModal').classList.add('hidden'); }
 
-        function closeAdminAuthModal() {
-            document.getElementById('adminAuthModal').classList.add('hidden');
+        function isLockedOut(errElId) {
+            if (Date.now() < lockedUntil) {
+                const sec = Math.ceil((lockedUntil - Date.now()) / 1000);
+                const el = $(errElId);
+                el.innerText = 'बहुत ग़लत कोशिशें! ' + sec + ' सेकंड बाद फिर कोशिश कीजिए।';
+                el.classList.remove('hidden');
+                return true;
+            }
+            return false;
+        }
+        function registerFail() {
+            failedTries++;
+            if (failedTries >= 5) { lockedUntil = Date.now() + 30000; failedTries = 0; }
+        }
+        function enterAdmin() {
+            failedTries = 0;
+            closeAdminAuthModal();
+            $('adminPanelModal').classList.remove('hidden');
+            switchAdminTab('tab-analytics');
         }
 
         function verifyAdminPasscode(e) {
             e.preventDefault();
-            const pass = document.getElementById('adminPassInput').value;
-            if (pass === ADMIN_PASSCODE) {
-                closeAdminAuthModal();
-                document.getElementById('adminPanelModal').classList.remove('hidden');
+            if (isLockedOut('authErrorMsg')) return;
+            if (hashStr($('adminPassInput').value) === PASS_HASH) {
+                enterAdmin();
             } else {
-                document.getElementById('authErrorMsg').classList.remove('hidden');
+                registerFail();
+                $('authErrorMsg').innerText = 'Incorrect Passcode! Try again.';
+                $('authErrorMsg').classList.remove('hidden');
             }
         }
-
         function switchToForgotPassState() {
-            document.getElementById('authFormState').classList.add('hidden');
-            document.getElementById('forgotFormState').classList.remove('hidden');
-            document.getElementById('adminDobInput').value = '';
-            document.getElementById('dobErrorMsg').classList.add('hidden');
+            $('authFormState').classList.add('hidden');
+            $('forgotFormState').classList.remove('hidden');
+            $('adminDobInput').value = '';
+            $('dobErrorMsg').classList.add('hidden');
         }
-
         function switchToAuthPassState() {
-            document.getElementById('forgotFormState').classList.add('hidden');
-            document.getElementById('authFormState').classList.remove('hidden');
+            $('forgotFormState').classList.add('hidden');
+            $('authFormState').classList.remove('hidden');
         }
-
         function verifyAdminDOB(e) {
             e.preventDefault();
-            const dob = document.getElementById('adminDobInput').value.trim();
-            if (dob === RESET_DOB) {
-                alert("DOB Verified! Passcode unlocked.");
-                closeAdminAuthModal();
-                document.getElementById('adminPanelModal').classList.remove('hidden');
+            if (isLockedOut('dobErrorMsg')) return;
+            if (hashStr($('adminDobInput').value.trim()) === DOB_HASH) {
+                enterAdmin();
             } else {
-                document.getElementById('dobErrorMsg').classList.remove('hidden');
+                registerFail();
+                $('dobErrorMsg').innerText = 'Incorrect Date of Birth!';
+                $('dobErrorMsg').classList.remove('hidden');
             }
         }
-
-        function closeAdminPanelModal() {
-            document.getElementById('adminPanelModal').classList.add('hidden');
-        }
+        function closeAdminPanelModal() { $('adminPanelModal').classList.add('hidden'); }
     </script>
 </body>
 </html>
