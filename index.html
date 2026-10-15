@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CineStreamPRO - Premium Video Portal</title>
+    <title>vipmovies - Premium Video Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -51,6 +51,40 @@
         .howto-box { background: #0b0f1a; border: 1px solid rgba(255,255,255,0.35); }
         .howto-box li, .howto-box p, .howto-box h4 { color: #ffffff; }
         .howto-box li { font-size: 13px; line-height: 1.7; font-weight: 600; }
+
+        /* ===== एडमिन पैनल: रंगीन प्रोफ़ेशनल डिज़ाइन ===== */
+        .admin-shell { background: linear-gradient(160deg, #0b0d14 0%, #090a0f 60%, #140a16 100%); }
+        .admin-shell::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; z-index: 20;
+            background: linear-gradient(90deg, #3987e5, #199e70, #c98500, #d95926, #d55181); }
+        .admin-side { background: linear-gradient(180deg, rgba(57,135,229,.16), rgba(213,81,129,.10)), #07080c; }
+        .admin-logo { background: linear-gradient(90deg, #5598e7, #d55181, #eda100); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+        .admin-tab-btn { color: #c3c2b7; border: 1px solid transparent; transition: all .2s ease; }
+        .admin-tab-btn .tab-ico { width: 28px; height: 28px; border-radius: 9px; display: flex; align-items: center; justify-content: center;
+            background: rgb(var(--tab-rgb)); color: #fff; font-size: 12px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(var(--tab-rgb), .35); }
+        .admin-tab-btn:hover { background: rgba(255,255,255,.06); color: #fff; }
+        .admin-tab-btn.active { color: #fff; background: linear-gradient(90deg, rgba(var(--tab-rgb), .32), rgba(var(--tab-rgb), .04)); border-color: rgba(var(--tab-rgb), .5); }
+        .admin-tab-btn[data-tab="tab-analytics"] { --tab-rgb: 57,135,229; }
+        .admin-tab-btn[data-tab="tab-add-movie"] { --tab-rgb: 25,158,112; }
+        .admin-tab-btn[data-tab="tab-manage-movies"] { --tab-rgb: 201,133,0; }
+        .admin-tab-btn[data-tab="tab-settings"] { --tab-rgb: 213,81,129; }
+
+        #adminPanelModal main h3::before { content: ''; display: inline-block; width: 4px; height: 15px; border-radius: 2px; margin-right: 9px; vertical-align: -3px;
+            background: linear-gradient(180deg, #3987e5, #d55181); }
+
+        .stat-card { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 16px; position: relative; overflow: hidden;
+            background: linear-gradient(135deg, rgba(var(--c), .30), rgba(var(--c), .06)); border: 1px solid rgba(var(--c), .5); }
+        .stat-ico { width: 42px; height: 42px; border-radius: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            background: rgb(var(--c)); color: #fff; font-size: 17px; box-shadow: 0 6px 16px rgba(var(--c), .4); }
+        .stat-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #c3c2b7; }
+        .stat-val { display: block; font-size: 26px; line-height: 1.15; font-weight: 900; color: #ffffff; }
+
+        .viz-card { background: #0d0f14; border: 1px solid rgba(255,255,255,.1); border-radius: 16px; padding: 14px; }
+        .viz-title { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; color: #f0efec; letter-spacing: .04em; text-transform: uppercase;
+            border-bottom: 1px solid rgba(255,255,255,.08); padding-bottom: 8px; margin-bottom: 10px; }
+        .viz-title .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--dot); flex-shrink: 0; }
+        .viz-sub { margin-left: auto; font-size: 10px; font-weight: 500; letter-spacing: 0; text-transform: none; color: #898781; text-align: right; }
+        .viz-empty { height: 14rem; display: flex; align-items: center; justify-content: center; text-align: center; color: #898781; font-size: 12px; }
     </style>
 </head>
 <body class="theme-netflix min-h-screen flex flex-col selection:bg-red-600 selection:text-white">
@@ -63,7 +97,7 @@
             </div>
             <div class="flex flex-col">
                 <span class="brand-font text-xl sm:text-2xl font-black tracking-wider text-white leading-none">
-                    CineStream<span class="text-red-500">PRO</span>
+                    vip<span class="text-red-500">movies</span>
                 </span>
                 <span class="text-[8px] text-gray-400 tracking-widest font-semibold uppercase mt-0.5">HD Portal</span>
             </div>
@@ -168,11 +202,11 @@
 
                     <div class="w-full mt-2.5 bg-black/60 border border-white/10 rounded-lg p-1 flex flex-col items-center justify-center">
                         <span class="text-[8px] text-gray-500 uppercase tracking-widest mb-0.5">Sponsored Ad</span>
-                        <div class="w-full overflow-hidden flex justify-center items-center max-h-[60px]">
+                        <div class="w-full overflow-hidden flex justify-center items-center max-h-[50px]">
                             <script>
-                              atOptions = { 'key' : '948025ec81d2e6ebbd59049304441e15', 'format' : 'iframe', 'height' : 60, 'width' : 468, 'params' : {} };
+                              atOptions = { 'key' : '81a241f8b7173ad2bf8304e707ad24ec', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
                             </script>
-                            <script src="https://ourselvesincompetentlearned.com/948025ec81d2e6ebbd59049304441e15/invoke.js"></script>
+                            <script src="https://ourselvesincompetentlearned.com/81a241f8b7173ad2bf8304e707ad24ec/invoke.js"></script>
                         </div>
                     </div>
                 </div>
@@ -202,6 +236,16 @@
                         <span id="statusText">वीडियो देखने के लिए नीचे दिए गए बटन को दबाइए</span>
                     </div>
                     <div id="linksList" class="space-y-2"></div>
+
+                    <div class="w-full pt-2 border-t border-white/10 flex flex-col items-center">
+                        <span class="text-[8px] text-gray-500 uppercase tracking-widest mb-0.5">Sponsored Ad</span>
+                        <div class="w-full overflow-hidden flex justify-center items-center max-h-[50px]">
+                            <script>
+                              atOptions = { 'key' : '81a241f8b7173ad2bf8304e707ad24ec', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
+                            </script>
+                            <script src="https://ourselvesincompetentlearned.com/81a241f8b7173ad2bf8304e707ad24ec/invoke.js"></script>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -265,25 +309,25 @@
 
     <!-- Admin Panel -->
     <div id="adminPanelModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-2 sm:p-5">
-        <div class="bg-gray-950 border border-white/10 rounded-2xl w-full max-w-5xl h-[92vh] flex flex-col md:flex-row overflow-hidden shadow-2xl relative">
+        <div class="admin-shell border border-white/10 rounded-2xl w-full max-w-5xl h-[92vh] flex flex-col md:flex-row overflow-hidden shadow-2xl relative">
 
             <div class="md:hidden p-3 bg-black/80 border-b border-white/10 flex items-center justify-between">
                 <button id="sidebarToggleBtn" class="p-1.5 text-white bg-white/10 rounded-lg text-sm"><i class="fa-solid fa-bars"></i></button>
-                <span class="text-xs font-bold text-white">CineStreamPRO Admin</span>
+                <span class="text-xs font-bold text-white">vipmovies Admin</span>
                 <button class="closeAdminBtn text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
 
-            <aside id="adminSidebarDrawer" class="w-full md:w-56 bg-black/90 border-r border-white/10 flex flex-col justify-between hidden md:flex transition-all">
+            <aside id="adminSidebarDrawer" class="w-full md:w-56 admin-side border-r border-white/10 flex flex-col justify-between hidden md:flex transition-all">
                 <div class="p-4 space-y-5">
                     <div class="hidden md:flex items-center space-x-2">
-                        <i class="fa-solid fa-video text-red-500 text-lg"></i>
-                        <span class="font-extrabold text-base tracking-wider text-white">CineStreamPRO</span>
+                        <i class="fa-solid fa-video text-pink-400 text-lg"></i>
+                        <span class="admin-logo font-extrabold text-lg tracking-wider">vipmovies</span>
                     </div>
-                    <nav class="space-y-1">
-                        <button data-tab="tab-analytics" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5"><i class="fa-solid fa-chart-line text-xs"></i><span>Analytics</span></button>
-                        <button data-tab="tab-add-movie" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5"><i class="fa-solid fa-plus-circle text-xs"></i><span>Add Content</span></button>
-                        <button data-tab="tab-manage-movies" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5"><i class="fa-solid fa-list text-xs"></i><span>Manage Content</span></button>
-                        <button data-tab="tab-settings" class="admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5"><i class="fa-solid fa-sliders text-xs"></i><span>Settings</span></button>
+                    <nav class="space-y-1.5">
+                        <button data-tab="tab-analytics" class="admin-tab-btn"><span class="tab-ico"><i class="fa-solid fa-chart-line"></i></span><span>Analytics</span></button>
+                        <button data-tab="tab-add-movie" class="admin-tab-btn"><span class="tab-ico"><i class="fa-solid fa-plus"></i></span><span>Add Content</span></button>
+                        <button data-tab="tab-manage-movies" class="admin-tab-btn"><span class="tab-ico"><i class="fa-solid fa-list"></i></span><span>Manage Content</span></button>
+                        <button data-tab="tab-settings" class="admin-tab-btn"><span class="tab-ico"><i class="fa-solid fa-sliders"></i></span><span>Settings</span></button>
                     </nav>
                 </div>
                 <div class="p-3 border-t border-white/10 hidden md:block">
@@ -295,25 +339,43 @@
                 <button class="closeAdminBtn hidden md:flex absolute top-3 right-3 w-8 h-8 rounded-full bg-white/10 text-white hover:bg-red-600 items-center justify-center transition-all z-10 text-xs"><i class="fa-solid fa-xmark"></i></button>
 
                 <!-- Analytics -->
-                <div id="tab-analytics" class="admin-tab-content space-y-5">
-                    <h3 class="text-sm font-bold text-white border-b border-white/10 pb-2">📊 Realtime Visitor Analytics</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div class="p-3 bg-gradient-to-br from-green-900/30 to-emerald-900/10 border border-green-500/30 rounded-xl flex items-center justify-between">
-                            <div><span class="text-[10px] text-green-400 font-bold uppercase tracking-wider block">🟢 Live Active</span><span id="activeUserCount" class="text-2xl font-black text-white mt-0.5 block">1</span></div>
-                            <i class="fa-solid fa-users text-2xl text-green-500/40"></i>
+                <div id="tab-analytics" class="admin-tab-content space-y-4">
+                    <h3 class="text-sm font-bold text-white border-b border-white/10 pb-2">Realtime Visitor Analytics</h3>
+
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div class="stat-card" style="--c:25,158,112">
+                            <div class="stat-ico"><i class="fa-solid fa-signal"></i></div>
+                            <div><span class="stat-label">Live Active</span><span id="activeUserCount" class="stat-val">1</span></div>
                         </div>
-                        <div class="p-3 bg-gradient-to-br from-blue-900/30 to-indigo-900/10 border border-blue-500/30 rounded-xl flex items-center justify-between">
-                            <div><span class="text-[10px] text-blue-400 font-bold uppercase tracking-wider block">Today's Visitors</span><span id="todayVisitorCount" class="text-2xl font-black text-white mt-0.5 block">0</span></div>
-                            <i class="fa-solid fa-chart-line text-2xl text-blue-500/40"></i>
+                        <div class="stat-card" style="--c:57,135,229">
+                            <div class="stat-ico"><i class="fa-solid fa-calendar-day"></i></div>
+                            <div><span class="stat-label">Today's Visitors</span><span id="todayVisitorCount" class="stat-val">0</span></div>
                         </div>
-                        <div class="p-3 bg-gradient-to-br from-purple-900/30 to-fuchsia-900/10 border border-purple-500/30 rounded-xl flex items-center justify-between">
-                            <div><span class="text-[10px] text-purple-400 font-bold uppercase tracking-wider block">Total Visitors</span><span id="totalVisitorCount" class="text-2xl font-black text-white mt-0.5 block">0</span></div>
-                            <i class="fa-solid fa-eye text-2xl text-purple-500/40"></i>
+                        <div class="stat-card" style="--c:213,81,129">
+                            <div class="stat-ico"><i class="fa-solid fa-eye"></i></div>
+                            <div><span class="stat-label">Total Visitors</span><span id="totalVisitorCount" class="stat-val">0</span></div>
+                        </div>
+                        <div class="stat-card" style="--c:201,133,0">
+                            <div class="stat-ico"><i class="fa-solid fa-film"></i></div>
+                            <div><span class="stat-label">Total Content</span><span id="statContentCount" class="stat-val">0</span></div>
                         </div>
                     </div>
-                    <div class="bg-black/50 border border-white/10 rounded-xl p-4 space-y-2">
-                        <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center border-b border-white/10 pb-2"><i class="fa-solid fa-chart-area text-red-500 mr-2"></i> Daily Visitor Traffic Trend</h4>
-                        <div class="relative w-full h-56"><canvas id="visitorChart"></canvas></div>
+
+                    <div class="viz-card">
+                        <h4 class="viz-title" style="--dot:#3987e5">Daily Visitor Traffic Trend <span class="viz-sub">पिछले 7 दिन</span></h4>
+                        <div class="relative w-full h-56"><canvas id="visitorChart" role="img" aria-label="पिछले 7 दिनों के विज़िटर का ग्राफ"></canvas></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="viz-card">
+                            <h4 class="viz-title" style="--dot:#d95926">Content By Category <span class="viz-sub">श्रेणी के हिसाब से</span></h4>
+                            <div class="relative w-full h-56"><canvas id="categoryChart" role="img" aria-label="श्रेणी के हिसाब से सामग्री का गोल ग्राफ"></canvas></div>
+                            <div id="categoryEmpty" class="viz-empty hidden">अभी कोई सामग्री नहीं जुड़ी है।</div>
+                        </div>
+                        <div class="viz-card">
+                            <h4 class="viz-title" style="--dot:#c98500">Visitors By Weekday <span class="viz-sub">दिन के हिसाब से कुल</span></h4>
+                            <div class="relative w-full h-56"><canvas id="weekdayChart" role="img" aria-label="सप्ताह के दिनों के हिसाब से विज़िटर का बार ग्राफ"></canvas></div>
+                        </div>
                     </div>
                 </div>
 
@@ -390,11 +452,16 @@
                 <div id="tab-settings" class="admin-tab-content space-y-5 hidden">
                     <h3 class="text-sm font-bold text-white border-b border-white/10 pb-2">⚙️ Settings & Telegram Setup</h3>
                     <div class="bg-gradient-to-r from-sky-900/20 to-blue-900/10 border border-sky-500/30 rounded-xl p-4 space-y-3">
-                        <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center"><i class="fa-brands fa-telegram text-sky-400 text-base mr-2"></i> Update Telegram Link</h4>
+                        <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center"><i class="fa-brands fa-telegram text-sky-400 text-base mr-2"></i> Update Telegram Link &amp; Text</h4>
                         <div class="flex flex-col sm:flex-row gap-2.5">
                             <input type="url" id="adminTelegramLinkInput" placeholder="https://t.me/your_channel_link" class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400">
                             <button id="saveTelegramBtn" class="px-5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs whitespace-nowrap transition-all shadow-md">Save Link</button>
                         </div>
+                        <div class="flex flex-col sm:flex-row gap-2.5">
+                            <input type="text" id="adminTelegramTextInput" maxlength="120" placeholder="बैनर पर दिखने वाला टेक्स्ट लिखिए" class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400">
+                            <button id="saveTelegramTextBtn" class="px-5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs whitespace-nowrap transition-all shadow-md">Save Text</button>
+                        </div>
+                        <p class="text-[10px] text-gray-400">खाली छोड़कर सहेजने पर पहले वाला टेक्स्ट लौट आएगा।</p>
                     </div>
                     <div class="p-4 bg-black/50 border border-white/10 rounded-xl space-y-2">
                         <label class="text-xs text-gray-400 font-bold uppercase tracking-wider block">App Color Palette Theme</label>
@@ -431,12 +498,25 @@
         const PLACEHOLDER_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
             '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450"><rect width="100%" height="100%" fill="#111827"/><text x="50%" y="50%" fill="#6b7280" font-size="18" text-anchor="middle" font-family="sans-serif">No Poster</text></svg>');
 
+        // ---------- ग्राफ के रंग (जाँचा हुआ 5-रंग पैलेट, गहरी सतह पर) ----------
+        const VIZ = { blue: '#3987e5', orange: '#d95926', aqua: '#199e70', yellow: '#c98500', magenta: '#d55181' };
+        const VIZ_SURFACE = '#0d0f14';
+        const VIZ_INK = '#c3c2b7';
+        const VIZ_MUTED = '#898781';
+        const VIZ_GRID = 'rgba(255,255,255,0.07)';
+        // रंग श्रेणी (वस्तु) के साथ बँधा है, गिनती के क्रम के साथ नहीं
+        const CAT_ORDER = ['Bollywood', 'Hollywood', 'South Hindi', 'Web Series'];
+        const CAT_COLORS = { 'Bollywood': VIZ.orange, 'Hollywood': VIZ.blue, 'South Hindi': VIZ.aqua, 'Web Series': VIZ.magenta };
+        const CAT_LABELS = { 'Bollywood': 'Bollywood', 'Hollywood': 'Hollywood', 'South Hindi': 'South Dubbed', 'Web Series': 'Web Series' };
+
         // ---------- स्थिति ----------
         let db = null;
         let moviesData = [];
         let currentCategory = 'All';
         let searchQuery = '';
         let myChartInstance = null;
+        let catChartInstance = null;
+        let dowChartInstance = null;
         let selectedMovieObj = null;
         let currentLang = 'EN';
         let toggleState = false;
@@ -444,6 +524,7 @@
         let adBtns = {};       // हर लिंक का बटन
         let pendingState = null;   // रीलोड से पहले की सहेजी स्थिति
         let stateRestored = false;
+        let customTelegramText = '';   // एडमिन का लिखा बैनर टेक्स्ट (खाली = डिफ़ॉल्ट)
         let failedTries = 0;
         let lockedUntil = 0;
 
@@ -524,7 +605,7 @@
                 console.warn('Firebase Init fallback to LocalStorage:', err);
                 db = null;
             }
-            if (!usedFirebase) loadFromLocalStorage();
+            if (!usedFirebase) { loadFromLocalStorage(); renderVisitorLineChart({}); renderWeekdayChart({}); }
         });
 
         function bindStaticEvents() {
@@ -549,6 +630,7 @@
             $('addLinkBtn').addEventListener('click', () => addLinkRow('', ''));
             $('cancelEditBtn').addEventListener('click', resetMovieForm);
             $('saveTelegramBtn').addEventListener('click', updateTelegramLink);
+            $('saveTelegramTextBtn').addEventListener('click', updateTelegramText);
             $('themeSelector').addEventListener('change', e => changeAppTheme(e.target.value));
 
             // खोज: टाइप रुकने के थोड़ी देर बाद नतीजे (बार-बार रेंडर नहीं)
@@ -593,7 +675,7 @@
             currentLang = currentLang === 'EN' ? 'HI' : 'EN';
             const s = STR[currentLang];
             $('currentLangText').innerText = currentLang;
-            $('telegramTextDesc').innerText = s.tg;
+            applyTelegramText();
             $('searchInputDesktop').placeholder = s.ph;
             $('searchInputMobile').placeholder = s.ph;
             $('emptyTitle').innerText = s.emptyT;
@@ -628,42 +710,122 @@
                 $('todayVisitorCount').innerText = daily[todayStr] || 0;
                 $('totalVisitorCount').innerText = data.total_visits || 0;
                 renderVisitorLineChart(daily);
+                renderWeekdayChart(daily);
             });
         }
 
+        function chartTooltip() {
+            return { backgroundColor: 'rgba(20,22,28,0.96)', titleColor: '#f0efec', bodyColor: VIZ_INK, borderColor: 'rgba(255,255,255,0.14)',
+                     borderWidth: 1, padding: 10, cornerRadius: 8, boxPadding: 4 };
+        }
+        function chartAxes() {
+            return {
+                x: { ticks: { color: VIZ_MUTED, font: { size: 10 } }, grid: { display: false }, border: { color: 'rgba(255,255,255,0.12)' } },
+                y: { ticks: { color: VIZ_MUTED, precision: 0, font: { size: 10 } }, grid: { color: VIZ_GRID }, border: { display: false }, beginAtZero: true }
+            };
+        }
+        function chartReady() {
+            if (typeof Chart === 'undefined') return false;
+            Chart.defaults.font.family = "'Poppins', sans-serif";
+            return true;
+        }
+
+        // 1) पिछले 7 दिन: रेखा + ढलवाँ रंग भराव
         function renderVisitorLineChart(dailyData) {
             const canvas = $('visitorChart');
-            if (!canvas || typeof Chart === 'undefined') return;
-            const ctx = canvas.getContext('2d');
+            if (!canvas || !chartReady()) return;
             const labels = [], points = [];
             for (let i = 6; i >= 0; i--) {
                 const d = new Date();
                 d.setDate(d.getDate() - i);
                 labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-                points.push(dailyData[localDateStr(d)] || 0);
+                points.push((dailyData || {})[localDateStr(d)] || 0);
             }
             if (myChartInstance) myChartInstance.destroy();
-            myChartInstance = new Chart(ctx, {
+            myChartInstance = new Chart(canvas.getContext('2d'), {
                 type: 'line',
                 data: { labels, datasets: [{
-                    label: 'Daily Visitors', data: points,
-                    borderColor: '#e50914', backgroundColor: 'rgba(229, 9, 20, 0.2)',
-                    fill: true, tension: 0.4, borderWidth: 2.5,
-                    pointBackgroundColor: '#ffffff', pointBorderColor: '#e50914', pointRadius: 4
+                    label: 'Visitors', data: points,
+                    borderColor: VIZ.blue, borderWidth: 2.5, tension: 0.4, fill: true,
+                    backgroundColor: (c) => {
+                        const ch = c.chart, area = ch.chartArea;
+                        if (!area) return 'rgba(57,135,229,0.25)';
+                        const g = ch.ctx.createLinearGradient(0, area.top, 0, area.bottom);
+                        g.addColorStop(0, 'rgba(57,135,229,0.5)');
+                        g.addColorStop(1, 'rgba(57,135,229,0.02)');
+                        return g;
+                    },
+                    pointBackgroundColor: VIZ_SURFACE, pointBorderColor: VIZ.blue, pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6
                 }] },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { labels: { color: '#cccccc', font: { family: 'Poppins', size: 10 } } } },
-                    scales: {
-                        x: { ticks: { color: '#888888', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                        y: { ticks: { color: '#888888', precision: 0, font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { display: false }, tooltip: chartTooltip() },
+                    scales: chartAxes()
+                }
+            });
+        }
+
+        // 2) श्रेणी के हिसाब से सामग्री: गोल (डोनट) ग्राफ, 4 रंग
+        function renderCategoryChart() {
+            const canvas = $('categoryChart');
+            if (!canvas || !chartReady()) return;
+            const counts = CAT_ORDER.map(c => moviesData.filter(m => m.category === c).length);
+            const total = counts.reduce((a, b) => a + b, 0);
+            if (catChartInstance) { catChartInstance.destroy(); catChartInstance = null; }
+            canvas.parentElement.classList.toggle('hidden', total === 0);
+            $('categoryEmpty').classList.toggle('hidden', total !== 0);
+            if (total === 0) return;
+            catChartInstance = new Chart(canvas.getContext('2d'), {
+                type: 'doughnut',
+                data: { labels: CAT_ORDER.map(c => CAT_LABELS[c]), datasets: [{
+                    data: counts, backgroundColor: CAT_ORDER.map(c => CAT_COLORS[c]),
+                    borderColor: VIZ_SURFACE, borderWidth: 2, hoverOffset: 6
+                }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '62%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: VIZ_INK, usePointStyle: true, pointStyle: 'circle', boxWidth: 8, padding: 12, font: { size: 10 } } },
+                        tooltip: Object.assign(chartTooltip(), { callbacks: { label: (it) => ' ' + it.label + ': ' + it.parsed + ' (' + Math.round(it.parsed * 100 / total) + '%)' } })
                     }
+                }
+            });
+        }
+
+        // 3) सप्ताह के दिनों के हिसाब से कुल विज़िटर (अब तक के सारे दर्ज दिन)
+        function renderWeekdayChart(dailyData) {
+            const canvas = $('weekdayChart');
+            if (!canvas || !chartReady()) return;
+            const totals = [0, 0, 0, 0, 0, 0, 0];   // सोम ... रवि
+            Object.keys(dailyData || {}).forEach(k => {
+                const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(k);
+                if (!m) return;
+                const wd = new Date(+m[1], +m[2] - 1, +m[3]).getDay();
+                totals[(wd + 6) % 7] += Number(dailyData[k]) || 0;
+            });
+            if (dowChartInstance) dowChartInstance.destroy();
+            dowChartInstance = new Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                data: { labels: ['सोम', 'मंगल', 'बुध', 'गुरु', 'शुक्र', 'शनि', 'रवि'], datasets: [{
+                    label: 'Visitors', data: totals, backgroundColor: VIZ.yellow,
+                    borderRadius: 5, borderSkipped: 'bottom', maxBarThickness: 30
+                }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: chartTooltip() },
+                    scales: chartAxes()
                 }
             });
         }
 
         // ---------- Firebase सुनने वाले ----------
         function setupRealtimeListeners() {
+            db.ref('settings/telegram_text').on('value', snap => {
+                customTelegramText = String(snap.val() || '');
+                applyTelegramText();
+                const inp = $('adminTelegramTextInput'); if (inp) inp.value = customTelegramText;
+            });
+
             db.ref('movies').on('value', snap => {
                 const val = snap.val();
                 moviesData = [];
@@ -697,8 +859,24 @@
             alert('टेलीग्राम लिंक सहेज लिया गया!');
         }
 
+        function applyTelegramText() {
+            const el = $('telegramTextDesc');
+            if (el) el.innerText = customTelegramText || STR[currentLang].tg;
+        }
+
+        function updateTelegramText() {
+            const t = $('adminTelegramTextInput').value.trim().slice(0, 120);
+            customTelegramText = t;
+            applyTelegramText();
+            if (db) db.ref('settings/telegram_text').set(t || null);
+            else { try { localStorage.setItem('cs_tg_text', t); } catch (e) {} }
+            alert(t ? 'टेलीग्राम बैनर का टेक्स्ट सहेज लिया गया!' : 'टेक्स्ट पहले जैसा कर दिया गया।');
+        }
+
         // ---------- लोकल स्टोरेज (Firebase न चले तो) ----------
         function loadFromLocalStorage() {
+            try { customTelegramText = localStorage.getItem('cs_tg_text') || ''; } catch (e) {}
+            applyTelegramText();
             let stored = null;
             try { stored = localStorage.getItem('cine_movies'); } catch (e) {}
             if (stored) {
@@ -952,9 +1130,7 @@
         function highlightAdminTab(tabId) {
             document.querySelectorAll('.admin-tab-btn').forEach(btn => {
                 const active = btn.dataset.tab === tabId;
-                btn.className = 'admin-tab-btn w-full text-left px-3 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5 ' + (active
-                    ? 'text-red-400 bg-red-600/10 border border-red-500/20'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5');
+                btn.className = 'admin-tab-btn w-full text-left px-2.5 py-2 rounded-xl font-bold text-xs flex items-center space-x-2.5' + (active ? ' active' : '');
             });
         }
         function switchAdminTab(tabId) {
@@ -1016,13 +1192,14 @@
             moviesData.forEach(movie => {
                 const item = document.createElement('div');
                 item.className = 'flex items-center justify-between bg-black/60 border border-white/10 p-2.5 rounded-xl';
+                item.style.borderLeft = '3px solid ' + (CAT_COLORS[movie.category] || VIZ.blue);
                 const n = getMovieLinks(movie).length;
                 item.innerHTML =
                     '<div class="flex items-center space-x-2.5 overflow-hidden">' +
                         '<img data-thumb class="w-9 h-11 object-cover rounded-lg border border-white/10" alt="">' +
                         '<div class="truncate">' +
                             '<h5 class="text-xs font-bold text-white truncate">' + esc(movie.title) + '</h5>' +
-                            '<span class="text-[10px] text-gray-400">' + esc(movie.category) + ' • ' + n + ' लिंक</span>' +
+                            '<span class="text-[10px] text-gray-300"><i class="fa-solid fa-circle mr-1" style="font-size:7px;color:' + (CAT_COLORS[movie.category] || VIZ.blue) + '"></i>' + esc(movie.category) + ' • ' + n + ' लिंक</span>' +
                         '</div>' +
                     '</div>' +
                     '<div class="flex items-center space-x-1.5">' +
@@ -1034,6 +1211,8 @@
                 item.querySelector('[data-del]').addEventListener('click', () => deleteMovie(movie.id));
                 list.appendChild(item);
             });
+            const sc = $('statContentCount'); if (sc) sc.innerText = moviesData.length;
+            renderCategoryChart();
         }
 
         // फ़ोटो को छोटा करके सहेजना (डेटाबेस भारी न हो)
